@@ -1,0 +1,60 @@
+name: AI Project Analysis Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  ai_analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run AI task extraction and repo analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AI_MODEL: "github" # or "openai"
+        run: |
+          python -c "
+import os
+from project_pilot_ai.github_models import ModelClient
+from project_pilot_ai.config import get_model_config
+
+base_url, model_name = get_model_config(os.getenv('AI_MODEL', 'github'))
+token = os.getenv('GITHUB_TOKEN')
+client = ModelClient(base_url=base_url, model=model_name, token=token)
+
+# Example: analyze a dummy transcript (replace with real data or files)
+transcript = 'Meeting started at 10am. Task A assigned to John by next Friday.'
+prompt = f'Extract tasks from meeting transcript: {transcript}'
+
+response = client.ask([
+    {'role': 'system', 'content': 'You are a helpful assistant.'},
+    {'role': 'user', 'content': prompt}
+])
+print('Extracted Tasks:', response)
+
+# Example repo analysis prompt (replace with actual file tree)
+file_tree = 'README.md\nsrc/\ntests/\n.gitignore'
+goals = 'Make project scalable, maintainable, and secure.'
+prompt_repo = f'Analyze project structure:\\n{file_tree}\\nGoals:\\n{goals}'
+
+response_repo = client.ask([
+    {'role': 'system', 'content': 'You are an expert project architect.'},
+    {'role': 'user', 'content': prompt_repo}
+])
+print('Repo Analysis:', response_repo)
+"
