@@ -1,0 +1,10 @@
+requests
+pyjwt
+celery[redis]
+openai
+fastapi==0.95.1
+uvicorn[standard]==0.22.0
+kubernetes==26.1.0
+cpufeature==0.9.0
+torch==2.0.1
+petals==0.1
