@@ -1,0 +1,46 @@
+name: Docker CI for enclov-AI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Dockerfile linter
+        run: npm install -g dockerlint
+
+      - name: Lint Dockerfile
+        run: dockerlint -p wd/Dockerfile
+
+      - name: Download attached artifacts (simulate attach-at)
+        uses: actions/download-artifact@v3
+        with:
+          path: path-to-attach
+
+      - name: Pull docker cache images
+        run: |
+          docker pull image1 || echo "image1 not found"
+          docker pull image2 || echo "image2 not found"
+
+      - name: My docker build step
+        run: |
+          docker build \
+            --compress \
+            -f wd/Dockerfile \
+            --cache-from image1 \
+            --cache-from image2 \
+            -t my-registry/my-image:my-tag \
+            wd
+        timeout-minutes: 10
+        continue-on-error: false
+
+      - name: Docker Login
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
