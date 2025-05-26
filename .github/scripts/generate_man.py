@@ -1,34 +1,34 @@
 import subprocess
-import datetime
 import os
 
-def generate_man_page(command_name, version="1.0.0", section="1"):
-    try:
-        help_output = subprocess.check_output([command_name, '--help'], text=True)
-    except Exception as e:
-        print(f"Failed to run `{command_name} --help`: {e}")
-        return
+commands = ["start", "config", "version"]
+html_dir = "docs"
 
-    today = datetime.datetime.now().strftime("%B %Y")
-    man_page = [
-        f".TH {command_name.upper()} {section} \"{today}\" \"v{version}\" \"{command_name.capitalize()} Manual\"",
-        ".SH NAME",
-        f"{command_name} \\- auto-generated man page",
-        ".SH SYNOPSIS",
-        f".B {command_name} [options]",
-        ".SH DESCRIPTION",
-        "Auto-generated from `--help` output:",
-        ".nf",
-        *(line.replace("\\", "\\\\") for line in help_output.strip().splitlines()),
-        ".fi"
-    ]
+os.makedirs(html_dir, exist_ok=True)
 
-    os.makedirs("man", exist_ok=True)
-    man_filename = f"man/{command_name}.1"
-    with open(man_filename, "w") as f:
-        f.write("\n".join(man_page))
+css = """
+<style>
+  body { background: #121212; color: #eee; font-family: 'Fira Mono', monospace; padding: 2rem; }
+  a { color: #79b8ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  pre { background: #222; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+</style>
+"""
 
-    print(f"Generated man page: {man_filename}")
+def wrap_html(html_path):
+    with open(html_path, "r") as f:
+        content = f.read()
+    wrapped = f"""<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Enclov CLI Manual</title>{css}</head>
+<body><pre>{content}</pre></body>
+</html>"""
+    with open(html_path, "w") as f:
+        f.write(wrapped)
 
-if __name__ == "__main__":
-    generate_man_page("enclov")
+for cmd in commands:
+    man_file = f"man/enclov-{cmd}.1"
+    html_file = os.path.join(html_dir, f"enclov-{cmd}.html")
+    with open(html_file, "w") as html_out:
+        subprocess.run(["groff", "-man", "-Thtml", man_file], stdout=html_out, check=True)
+    wrap_html(html_file)
