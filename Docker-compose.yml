@@ -1,33 +1,36 @@
-version: "3.8"
+version: '3.8'
 
 services:
-  redis:
-    image: redis:7
-    ports:
-      - "6379:6379"
-
-  api:
-    build: .
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-    volumes:
-      - .:/app
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - APP_ID=${APP_ID}
-      - PRIVATE_KEY_PATH=/app/private-key.pem
+      APP_ID: ${1325944}
+      PRIVATE_KEY_PATH: /keys/private_key.pem
+      OPENAI_API_KEY: ${AIzaSyAvrxOyAVzPVcnzxuD0mjKVDyS2bNWfC10}
+    volumes:
+      - ./keys:/keys
     depends_on:
       - redis
 
-  worker:
-    build: .
-    command: celery -A main worker --loglevel=info
-    volumes:
-      - .:/app
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - APP_ID=${APP_ID}
-      - PRIVATE_KEY_PATH=/app/private-key.pem
+      APP_ID: ${1325944}
+      PRIVATE_KEY_PATH: /keys/private_key.pem
+      OPENAI_API_KEY: ${AIzaSyAvrxOyAVzPVcnzxuD0mjKVDyS2bNWfC10}
+    volumes:
+      - ./keys:/keys
     depends_on:
       - redis
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
