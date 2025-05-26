@@ -46,6 +46,29 @@ void check_api() {
 int main() {
     print_banner();
 
+    // System info
+    run_command("System Info", "uname -a");
+
+    // CPU info (Linux-only)
+    run_command("CPU Info", "lscpu | head -n 10");
+
+    // Memory info
+    run_command("Memory Usage", "free -h");
+
+    // Git repo check
+    run_command("Git Repo Status", "git status");
+
+    // Python environment
+    run_command("Installed Python Packages", "python3 -m pip list | head -n 10");
+
+    printf("=== enclov-AI CLI check complete ===\n");
+
+    return 0;
+}
+
+int main() {
+    print_banner();
+
     run_command("System Info", "uname -a");
     run_command("Memory Info", "free -h");
 
