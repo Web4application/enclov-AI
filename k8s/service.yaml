@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: enclov-ai-service
+  name: enclov-ai-web
 spec:
   selector:
-    app: enclov-ai
+    app: enclov-ai-web
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8000
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
   type: LoadBalancer
