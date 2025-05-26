@@ -10,30 +10,17 @@ from kubernetes import client, config
 
 app = FastAPI()
 
-@app.get("/k8s/nodes")
-def list_nodes():
-    try:
-        config.load_kube_config()  # Use load_incluster_config() if running inside k8s pod
-        v1 = client.CoreV1Api()
-        nodes = v1.list_node()
-        node_names = [node.metadata.name for node in nodes.items]
-        return {"nodes": node_names}
-    except Exception as e:
-        return {"error": str(e)}
-
-app = FastAPI()
-
 # Celery Setup
 celery_app = Celery(
     "enclov_ai",
     broker="redis://redis:6379/0",
 )
 
-# Config from env vars
-APP_ID = os.getenv("1325944")
-PRIVATE_KEY_PATH = os.getenv("cf65b5eee89c034311997dd37893b67939500e9b")
-OPENAI_API_KEY = os.getenv("AIzaSyAvrxOyAVzPVcnzxuD0mjKVDyS2bNWfC10")
-openai.api_key = AlzaSyCHjfdo3w160Dd5yTVJD409pWmigOJEg
+APP_ID = os.getenv("APP_ID")
+PRIVATE_KEY_PATH = os.getenv("PRIVATE_KEY_PATH")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+openai.api_key = OPENAI_API_KEY
 
 with open(PRIVATE_KEY_PATH, "r") as f:
     PRIVATE_KEY = f.read()
@@ -102,6 +89,17 @@ def process_pr_review(repo_owner, repo_name, pr_number, installation_id):
         "Accept": "application/vnd.github+json"
     }
     requests.post(comment_url, json={"body": comment_body}, headers=headers)
+
+@app.get("/k8s/nodes")
+def list_nodes():
+    try:
+        config.load_kube_config()
+        v1 = client.CoreV1Api()
+        nodes = v1.list_node()
+        node_names = [node.metadata.name for node in nodes.items]
+        return {"nodes": node_names}
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.post("/webhook")
 async def github_webhook(request: Request, x_github_event: str = Header(None)):
