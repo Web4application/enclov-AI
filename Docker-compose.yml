@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  api:
+    build: .
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - APP_ID=${APP_ID}
+      - PRIVATE_KEY_PATH=/app/private-key.pem
+    depends_on:
+      - redis
+
+  worker:
+    build: .
+    command: celery -A main worker --loglevel=info
+    volumes:
+      - .:/app
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - APP_ID=${APP_ID}
+      - PRIVATE_KEY_PATH=/app/private-key.pem
+    depends_on:
+      - redis
