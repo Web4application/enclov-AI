@@ -6,3 +6,7 @@ requests
 openai
 kubernetes
 redis
+httpx
+python-dotenv
+pyjwt
+cryptography
