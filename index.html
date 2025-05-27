@@ -194,13 +194,26 @@
     return "Code looks clean. No obvious issues found by the AI demo.";
   }
 
-  analyzeBtn.addEventListener('click', () => {
-    result.textContent = "Analyzing code...";
-    setTimeout(() => {
-      const comment = mockReviewComment(codeInput.value);
-      result.textContent = comment;
-    }, 800);
-  });
+  analyzeBtn.addEventListener('click', async () => {
+  const code = codeInput.value.trim();
+  if (!code) {
+    result.textContent = "Please provide some code for analysis.";
+    return;
+  }
+  result.textContent = "Analyzing code via enclov-AI backend...";
+  try {
+    const response = await fetch('https://api.yourdomain.com/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    });
+    const data = await response.json();
+    result.textContent = data.review || "No feedback from AI.";
+  } catch (error) {
+    result.textContent = "Failed to analyze code. Try again later.";
+    console.error(error);
+  }
+});
 </script>
 
 </body>
