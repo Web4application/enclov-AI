@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>Enclov CLI Manual</title>
+<head>
+<meta charset="UTF-8" />
+<title>Enclov CLI - start command</title>
 <style>
   body {
     background: #121212;
     color: #eee;
     font-family: 'Fira Mono', monospace;
     padding: 2rem;
+    max-width: 800px;
+    margin: auto;
   }
   a {
     color: #79b8ff;
@@ -21,85 +25,32 @@
     border-radius: 4px;
     overflow-x: auto;
   }
+  nav {
+    margin-bottom: 2rem;
+  }
 </style>
-</head>
-<body><pre><!-- Creator     : groff version 1.23.0 -->
-<!-- CreationDate: Tue May 27 05:25:39 2025 -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta name="generator" content="groff -Thtml, see www.gnu.org">
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
-<meta name="Content-Style" content="text/css">
-<style type="text/css">
-       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
-       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
-       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
-       h1      { text-align: center }
-</style>
-<title>ENCLOV-START</title>
-
 </head>
 <body>
+  <nav>
+    <a href="index.html">← Back to TOC</a>
+  </nav>
+  <h1>enclov start command</h1>
+  <p>Starts the Enclov AI CLI application. This command initializes your environment and sets up the connection with the Enclov backend services.</p>
+  
+  <h2>Usage</h2>
+  <pre>enclov start [options]</pre>
 
-<h1 align="center">ENCLOV-START</h1>
+  <h2>Options</h2>
+  <ul>
+    <li><code>--env &lt;environment&gt;</code> Specify the environment to start (e.g., production, staging, dev).</li>
+    <li><code>--verbose</code> Enable verbose logging output.</li>
+  </ul>
 
-<a href="#NAME">NAME</a><br>
-<a href="#SYNOPSIS">SYNOPSIS</a><br>
-<a href="#DESCRIPTION">DESCRIPTION</a><br>
-<a href="#OPTIONS">OPTIONS</a><br>
-
-<hr>
-
-
-<h2>NAME
-<a name="NAME"></a>
-</h2>
-
-
-<p style="margin-left:9%; margin-top: 1em">enclov-start -
-start Enclov AI container</p>
-
-<h2>SYNOPSIS
-<a name="SYNOPSIS"></a>
-</h2>
-
-
-<p style="margin-left:9%; margin-top: 1em"><b>enclov
-start</b></p>
-
-<h2>DESCRIPTION
-<a name="DESCRIPTION"></a>
-</h2>
-
-
-<p style="margin-left:9%; margin-top: 1em">Starts the
-Enclov container locally.</p>
-
-<h2>OPTIONS
-<a name="OPTIONS"></a>
-</h2>
-
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="9%"></td>
-<td width="8%">
-
-
-<p style="margin-top: 1em"><b>--help</b></p></td>
-<td width="1%"></td>
-<td width="36%">
-
-
-<p style="margin-top: 1em">Show help for start command.</p></td>
-<td width="46%">
-</td></tr>
- </table>
-<hr>
+  <h2>Example</h2>
+  <pre>enclov start --env production --verbose</pre>
+  
+  <h2>Notes</h2>
+  <p>This command must be run from the project root directory.</p>
 </body>
 </html>
-</pre></body>
-</html>
+l
