@@ -1,36 +1,36 @@
 version: '3.8'
 
 services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    environment:
-      APP_ID: ${1325944}
-      PRIVATE_KEY_PATH: /keys/private_key.pem
-      OPENAI_API_KEY: ${AIzaSyAvrxOyAVzPVcnzxuD0mjKVDyS2bNWfC10}
+  backend:
+    build: ./backend
+    container_name: enclov_backend
+    env_file: .env
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     volumes:
-      - ./keys:/keys
+      - ./backend:/code
     depends_on:
       - redis
 
   celery:
-    build:
-      context: .
-      dockerfile: Dockerfile.celery
-    environment:
-      APP_ID: ${1325944}
-      PRIVATE_KEY_PATH: /keys/private_key.pem
-      OPENAI_API_KEY: ${AIzaSyAvrxOyAVzPVcnzxuD0mjKVDyS2bNWfC10}
-    volumes:
-      - ./keys:/keys
+    build: ./backend
+    container_name: enclov_celery
+    command: celery -A app.celery_worker worker --loglevel=info
+    env_file: .env
     depends_on:
       - redis
 
   redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    image: redis:alpine
+    container_name: enclov_redis
 
+  nginx:
+    image: nginx:stable
+    container_name: enclov_nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
