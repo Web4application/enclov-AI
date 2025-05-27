@@ -1,122 +1,98 @@
+import hmac
+import hashlib
+import json
+from fastapi import FastAPI, Header, HTTPException, Request
+import httpx
 import os
-import time
-import jwt
-import requests
-import openai
-
-from fastapi import FastAPI, Request, Header
-from celery import Celery
-from kubernetes import client, config
 
 app = FastAPI()
 
-# Celery Setup
-celery_app = Celery(
-    "enclov_ai",
-    broker="redis://redis:6379/0",
-)
+GITHUB_WEBHOOK_SECRET = os.getenv("GITHUB_WEBHOOK_SECRET")
+GITHUB_APP_ID = os.getenv("GITHUB_APP_ID")
+GITHUB_PRIVATE_KEY_PATH = os.getenv("GITHUB_PRIVATE_KEY_PATH")  # .pem file path
 
-APP_ID = os.getenv("APP_ID")
-PRIVATE_KEY_PATH = os.getenv("PRIVATE_KEY_PATH")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+# You'll need PyJWT, cryptography to create JWT for GitHub App auth
+import jwt
+import time
 
-openai.api_key = OPENAI_API_KEY
-
-with open(PRIVATE_KEY_PATH, "r") as f:
-    PRIVATE_KEY = f.read()
+def verify_signature(request_body: bytes, signature: str):
+    mac = hmac.new(GITHUB_WEBHOOK_SECRET.encode(), msg=request_body, digestmod=hashlib.sha256)
+    expected_signature = "sha256=" + mac.hexdigest()
+    return hmac.compare_digest(expected_signature, signature)
 
 def create_jwt():
+    with open(GITHUB_PRIVATE_KEY_PATH, "r") as key_file:
+        private_key = key_file.read()
     now = int(time.time())
     payload = {
         "iat": now,
-        "exp": now + (10 * 60),
-        "iss": APP_ID,
+        "exp": now + (10 * 60),  # 10 minutes expiration
+        "iss": GITHUB_APP_ID
     }
-    return jwt.encode(payload, PRIVATE_KEY, algorithm="RS256")
+    token = jwt.encode(payload, private_key, algorithm="RS256")
+    return token
 
-def get_installation_access_token(installation_id):
+async def get_installation_access_token(installation_id: int):
     jwt_token = create_jwt()
     url = f"https://api.github.com/app/installations/{installation_id}/access_tokens"
     headers = {
         "Authorization": f"Bearer {jwt_token}",
         "Accept": "application/vnd.github+json"
     }
-    r = requests.post(url, headers=headers)
-    r.raise_for_status()
-    return r.json()["token"]
+    async with httpx.AsyncClient() as client:
+        r = await client.post(url, headers=headers)
+        r.raise_for_status()
+        return r.json()["token"]
 
-def get_pr_files(repo_owner, repo_name, pr_number, token):
-    url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{pr_number}/files"
-    headers = {"Authorization": f"token {token}"}
-    r = requests.get(url, headers=headers)
-    r.raise_for_status()
-    return r.json()
-
-def ai_review_code_diff(diff_text):
-    prompt = f"""
-    You are a senior code reviewer. Review the following git diff and provide constructive feedback, pointing out potential issues, improvements, or code smells. Be concise and helpful.
-
-    Diff:
-    {diff_text}
-
-    Review:
-    """
-    response = openai.ChatCompletion.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=300,
-        temperature=0.2,
-    )
-    return response.choices[0].message.content.strip()
-
-@celery_app.task
-def process_pr_review(repo_owner, repo_name, pr_number, installation_id):
-    token = get_installation_access_token(installation_id)
-    pr_files = get_pr_files(repo_owner, repo_name, pr_number, token)
-    comments = []
-    for file in pr_files:
-        diff = file.get("patch", "")
-        if not diff:
-            continue
-        review = ai_review_code_diff(diff)
-        comments.append(f"File `{file['filename']}`:\n{review}\n---")
-
-    comment_body = "### enclov-AI Code Review Summary:\n" + "\n".join(comments)
-
-    comment_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/issues/{pr_number}/comments"
+async def post_review_comment(repo_full_name: str, pr_number: int, body: str, token: str):
+    url = f"https://api.github.com/repos/{repo_full_name}/pulls/{pr_number}/reviews"
     headers = {
         "Authorization": f"token {token}",
         "Accept": "application/vnd.github+json"
     }
-    requests.post(comment_url, json={"body": comment_body}, headers=headers)
-
-@app.get("/k8s/nodes")
-def list_nodes():
-    try:
-        config.load_kube_config()
-        v1 = client.CoreV1Api()
-        nodes = v1.list_node()
-        node_names = [node.metadata.name for node in nodes.items]
-        return {"nodes": node_names}
-    except Exception as e:
-        return {"error": str(e)}
+    data = {
+        "body": body,
+        "event": "COMMENT"
+    }
+    async with httpx.AsyncClient() as client:
+        r = await client.post(url, json=data, headers=headers)
+        r.raise_for_status()
+        return r.json()
 
 @app.post("/webhook")
-async def github_webhook(request: Request, x_github_event: str = Header(None)):
-    payload = await request.json()
+async def github_webhook(request: Request, x_hub_signature_256: str = Header(None), x_github_event: str = Header(None)):
+    body_bytes = await request.body()
 
-    if x_github_event != "pull_request":
-        return {"msg": "Event ignored"}
+    if not verify_signature(body_bytes, x_hub_signature_256):
+        raise HTTPException(status_code=401, detail="Invalid signature")
 
-    action = payload.get("action")
-    if action not in ["opened", "synchronize"]:
-        return {"msg": f"Ignored PR action: {action}"}
+    payload = json.loads(body_bytes)
 
-    pr_number = payload["number"]
-    repo_owner = payload["repository"]["owner"]["login"]
-    repo_name = payload["repository"]["name"]
-    installation_id = payload["installation"]["id"]
+    if x_github_event == "pull_request":
+        action = payload.get("action")
+        if action in ["opened", "synchronize", "reopened"]:
+            pr = payload["pull_request"]
+            pr_number = pr["number"]
+            repo = payload["repository"]["full_name"]
+            installation_id = payload["installation"]["id"]
+            code_diff_url = pr["diff_url"]
 
-    process_pr_review.delay(repo_owner, repo_name, pr_number, installation_id)
+            # 1. Get access token for the installation
+            token = await get_installation_access_token(installation_id)
 
-    return {"msg": "Job enqueued"}
+            # 2. Fetch the PR diff content (for analysis)
+            async with httpx.AsyncClient() as client:
+                diff_resp = await client.get(code_diff_url)
+                diff_resp.raise_for_status()
+                diff_text = diff_resp.text
+
+            # 3. Here, run your AI model or API call to analyze `diff_text`
+            # For demo, let's do a mock comment:
+            ai_review_comment = "Hello from enclov-AI! This is a placeholder review comment."
+
+            # 4. Post comment on PR review
+            await post_review_comment(repo, pr_number, ai_review_comment, token)
+
+            return {"msg": "Review comment posted"}
+
+    return {"msg": "Event ignored"}
