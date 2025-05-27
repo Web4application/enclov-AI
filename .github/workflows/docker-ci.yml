@@ -7,40 +7,41 @@ on:
     branches: [main]
 
 jobs:
-  docker-build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Dockerfile linter
-        run: npm install -g dockerlint
-
-      - name: Lint Dockerfile
-        run: dockerlint -p wd/Dockerfile
-
-      - name: Download attached artifacts (simulate attach-at)
-        uses: actions/download-artifact@v3
+      - name: Docker login
+        uses: docker/login-action@v2
         with:
-          path: path-to-attach
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Pull docker cache images
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./wd
+          file: ./wd/Dockerfile
+          push: true
+          tags: my-registry/my-image:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      - name: Move cache for next build
         run: |
-          docker pull image1 || echo "image1 not found"
-          docker pull image2 || echo "image2 not found"
-
-      - name: My docker build step
-        run: |
-          docker build \
-            --compress \
-            -f wd/Dockerfile \
-            --cache-from image1 \
-            --cache-from image2 \
-            -t my-registry/my-image:my-tag \
-            wd
-        timeout-minutes: 10
-        continue-on-error: false
-
-      - name: Docker Login
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
