@@ -1,1 +1,1 @@
-export OPENAI_API_KEY="sk_a77cbeda865232535243dc242fb4fbf580e2b340956770f9"
+pip install -r requirements.txt
