@@ -9,22 +9,62 @@
       font-family: 'Segoe UI', Tahoma, sans-serif;
       background: #0d0d0d;
       color: #e0e0e0;
-      margin: 0; padding: 2rem;
-      display: flex; flex-direction: column;
-      align-items: center; min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
+
+    header {
+      background: #1a1a1a;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #333;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #4caf50;
+      text-shadow: 0 0 4px #4caf50aa;
+    }
+
+    nav a {
+      color: #ccc;
+      margin-left: 1.2rem;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #4caf50;
+    }
+
+    main {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     h1 {
       color: #4caf50;
       font-size: 3rem;
       margin-bottom: 0.5em;
       text-shadow: 0 0 6px #4caf50cc;
     }
+
     .lead {
       font-size: 1.3rem;
       max-width: 600px;
       text-align: center;
       color: #bdbdbd;
     }
+
     .button {
       margin-top: 2rem;
       background: #4caf50;
@@ -37,9 +77,11 @@
       transition: 0.3s ease;
       text-decoration: none;
     }
+
     .button:hover {
       background: #43a047;
     }
+
     .progress-container {
       margin-top: 3rem;
       width: 100%;
@@ -48,12 +90,14 @@
       border-radius: 6px;
       overflow: hidden;
     }
+
     .progress-bar {
       height: 20px;
       background: #4caf50;
       width: 0%;
       transition: width 0.4s ease;
     }
+
     .comments-box {
       margin-top: 3rem;
       background: #1a1a1a;
@@ -63,44 +107,89 @@
       border-radius: 6px;
       font-size: 0.95rem;
     }
+
     .footer {
       margin-top: auto;
       font-size: 0.8rem;
       color: #666;
-      padding-top: 2rem;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .projects {
+      margin-top: 4rem;
+      max-width: 800px;
+      text-align: left;
+    }
+
+    .projects h2 {
+      color: #4caf50;
+      margin-bottom: 1rem;
+    }
+
+    .projects ul {
+      padding-left: 1.2rem;
+    }
+
+    .projects li {
+      margin-bottom: 1rem;
+    }
+
+    .projects a {
+      color: #81d4fa;
     }
   </style>
 </head>
 <body>
 
-  <h1>enclov-AI</h1>
-  <p class="lead">
-    Supercharge your GitHub PR workflow with real-time AI-driven review automation. 
-    Powered by OpenAI, FastAPI, Redis, and Celery.
-  </p>
+  <header>
+    <div class="logo">QUBUHUB</div>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="https://web4application.github.io/kubu-hai" target="_blank">Kubu-Hai</a>
+      <a href="https://github.com/Web4application/enclov-AI" target="_blank">GitHub</a>
+    </nav>
+  </header>
 
-  <a class="button" href="https://github.com/Web4application/enclov-AI" target="_blank">View on GitHub</a>
+  <main>
+    <h1>enclov-AI</h1>
+    <p class="lead">
+      Supercharge your GitHub PR workflow with real-time AI-driven review automation. 
+      Powered by OpenAI, FastAPI, Redis, and Celery.
+    </p>
 
-  <!-- Progress UI -->
-  <div class="progress-container">
-    <div class="progress-bar" id="progressBar"></div>
-  </div>
+    <a class="button" href="https://github.com/Web4application/enclov-AI" target="_blank">View on GitHub</a>
 
-  <!-- Simulated Comments Output -->
-  <div class="comments-box" id="commentBox">
-  🔄 Waiting for review...
-</div>
-  <strong>AI Review Comments:</strong><br><br>
-  <ul style="padding-left: 1.2rem; margin: 0;">
-    <li>✅ <strong>Refactored</strong> inefficient loop at <code>utils/helpers.py:45</code>.</li>
-    <li>🛡️ <strong>Suggested</strong> stronger typing in <code>main.py</code>.</li>
-    <li>🧹 <strong>Removed</strong> unused imports in <code>api/views.py</code>.</li>
-    <li>🔒 <strong>Security note:</strong> avoid exposing tokens in logs.</li>
-  </ul>
-</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="comments-box" id="commentBox">
+      🔄 Waiting for review...
+    </div>
+
+    <div class="projects" id="projects">
+      <h2>🔍 About QUBUHUB</h2>
+      <p>
+        <strong>QUBUHUB</strong> is the heartbeat of next-gen open innovation. From soulful companions like <em>Lola</em> to decentralized infrastructure with <em>Fadaka</em>, we've been crafting the future, one stack at a time. Built by dreamers, hackers, and pragmatists.
+      </p>
+
+      <h2>🚀 Projects from QUBUHUB</h2>
+      <ul>
+        <li><strong>Lola</strong>: Emotionally intelligent AI companion. <a href="https://github.com/Web4application/Lola.git" target="_blank">GitHub</a></li>
+        <li><strong>RODAAI</strong>: Open-source AI + data science orchestration. <a href="https://github.com/Web4application/Web4AI_Project_Assistant.git" target="_blank">GitHub</a></li>
+        <li><strong>Fadaka Blockchain</strong>: Secure and extensible blockchain network. <a href="https://github.com/Web4application/fadaka.git" target="_blank">GitHub</a></li>
+        <li><strong>AgbakoAI</strong>: Adaptable modular AI for real-world industries. <a href="https://github.com/Web4application/agbakoAI" target="_blank">GitHub</a></li>
+        <li><strong>Swiftbot</strong>: Fast orchestration bot for modern workflows. <a href="https://github.com/Web4application/swiftbot.git" target="_blank">GitHub</a></li>
+        <li><strong>Kubu-Hai</strong>: Full-stack generator with FastAPI + Dart. <a href="https://github.com/Web4application/kubu-hai" target="_blank">GitHub</a></li>
+        <li><strong>Enclov-AI</strong>: The AI code reviewer you're reading right now. <a href="https://github.com/Web4application/enclov-AI" target="_blank">GitHub</a></li>
+      </ul>
+    </div>
+  </main>
 
   <div class="footer">
-    &copy; 2025 enclov-AI by Kubu Lee. Built with containers, code, and conviction.
+    &copy; 2025 QUBUHUB. Built by Kubu Lee with containers, code, and conviction.
   </div>
 
   <script>
@@ -109,7 +198,7 @@
     const commentBox = document.getElementById('commentBox');
 
     function simulateJobProgress() {
-      setInterval(() => loadAIComments("12345"), 5000);
+      const interval = setInterval(() => {
         if (progress >= 100) {
           clearInterval(interval);
           commentBox.innerHTML = `
@@ -127,31 +216,23 @@
       }, 600);
     }
 
-    simulateJobProgress(fetch('/api/comments?job_id=xyz')
-  .then(res => res.json())
-  .then(data => {
-    commentBox.innerHTML = "<strong>AI Review Comments:</strong><br><br>" + data.comments_html;
-  });
-                        
-  <script>
-    async function loadAIComments(jobId) {
-    const commentBox = document.getElementById("commentBox");
-    commentBox.innerHTML = "🔄 Loading AI review comments...";
-    try {
-      const response = await fetch(`/api/comments?job_id=${jobId}`);
-      const data = await response.json();
-      commentBox.innerHTML = "<strong>AI Review Comments:</strong><br><br>" + data.comments_html;
-    } catch (error) {
-      commentBox.innerHTML = "❌ Failed to load comments.";
-      console.error(error);
-    }
-  }
+    simulateJobProgress();
 
-  // Auto-load comments when page loads
-  document.addEventListener("DOMContentLoaded", () => {
-    const jobId = "12345"; // You should dynamically inject or fetch the real job ID
-    loadAIComments(jobId);
-  });
-</script>
+    async function loadAIComments(jobId) {
+      try {
+        const response = await fetch(`/api/comments?job_id=${jobId}`);
+        const data = await response.json();
+        commentBox.innerHTML = "<strong>AI Review Comments:</strong><br><br>" + data.comments_html;
+      } catch (error) {
+        commentBox.innerHTML = "❌ Failed to load comments.";
+        console.error(error);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const jobId = "12345";
+      loadAIComments(jobId);
+    });
+  </script>
 </body>
 </html>
