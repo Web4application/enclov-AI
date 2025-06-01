@@ -1,11 +1,15 @@
 from fastapi import FastAPI, Header, HTTPException, Request
 import json
 from api.routes import comments
-
 from core.security import verify_signature
 from core.github_auth import get_installation_access_token
 from core.ai_review import generate_ai_review_comment
 import httpx
+import EnclovAIPage from "./components/EnclovAIPage";
+
+export default function Home() {
+  return <EnclovAIPage />;
+}
 
 app = FastAPI(
     title="Enclov-AI",
