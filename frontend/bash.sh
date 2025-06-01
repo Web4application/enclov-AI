@@ -8,3 +8,5 @@ npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 cd enclov-AI
 npx create-next-app@latest frontend --typescript
+cd enclov-AI/frontend
+npm run dev
