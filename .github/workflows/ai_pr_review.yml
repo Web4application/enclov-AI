@@ -24,7 +24,9 @@ jobs:
           python-version: 3.11
 
       - name: Install dependencies
-        run: pip install PyGithub
+  run: |
+    pip install PyGithub requests
+    pip install -e .
 
       - name: Run AI Review
         env:
