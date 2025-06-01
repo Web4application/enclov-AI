@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QUBUHUB — enclov-AI Reviewer</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        background: #0d0d0d;
+        color: #e0e0e0;
+        margin: 0;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .header {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #121212;
+        padding: 1rem 2rem;
+        border-bottom: 1px solid #333;
+      }
+      .logo {
+        font-size: 1.8rem;
+        color: #4caf50;
+        font-weight: bold;
+        text-shadow: 0 0 6px #4caf50cc;
+      }
+      .menu {
+        display: flex;
+        gap: 1.5rem;
+      }
+      .menu a {
+        color: #e0e0e0;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      h1 {
+        color: #4caf50;
+        font-size: 3rem;
+        margin-top: 1.5rem;
+        text-shadow: 0 0 6px #4caf50cc;
+      }
+      .lead {
+        font-size: 1.3rem;
+        max-width: 600px;
+        text-align: center;
+        color: #bdbdbd;
+      }
+      .button {
+        margin-top: 2rem;
+        background: #4caf50;
+        color: white;
+        padding: 0.8em 1.6em;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: 0.3s ease;
+      }
+      .button:hover {
+        background: #43a047;
+      }
+      .progress-container {
+        margin-top: 3rem;
+        width: 100%;
+        max-width: 600px;
+        background: #1e1e1e;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .progress-bar {
+        height: 20px;
+        background: #4caf50;
+        width: 0%;
+        transition: width 0.4s ease;
+      }
+      .comments-box {
+        margin-top: 3rem;
+        background: #1a1a1a;
+        border-left: 4px solid #4caf50;
+        padding: 1rem;
+        max-width: 600px;
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+      .footer {
+        margin-top: auto;
+        font-size: 0.8rem;
+        color: #666;
+        padding-top: 2rem;
+        text-align: center;
+      }
+      .footer a {
+        color: #4caf50;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="header">
+      <div class="logo">QUBUHUB</div>
+      <nav class="menu">
+        <a href="https://web4application.github.io/kubu-hai" target="_blank">kubu-hai</a>
+        <a href="https://github.com/Web4application/enclov-AI" target="_blank">GitHub</a>
+        <a href="#">Products</a>
+        <a href="#">Careers</a>
+      </nav>
+    </div>
+
+    <h1>enclov-AI</h1>
+    <p class="lead">
+      Supercharge your GitHub PR workflow with real-time AI-powered review automation.<br>
+      Powered by OpenAI, FastAPI, Redis, Celery, and the unstoppable drive of QUBUHUB.
+    </p>
+
+    <a class="button" href="https://github.com/Web4application/enclov-AI" target="_blank">View on GitHub</a>
+
+    <!-- Progress UI -->
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Comments Output -->
+    <div class="comments-box" id="commentBox">
+      🔄 Waiting for review...
+    </div>
+
+    <div class="footer">
+      &copy; 2025 QUBUHUB — Built by Kubu Lee and powered by a constellation of ideas:<br>
+      <a href="https://web4application.github.io/kubu-hai" target="_blank">kubu-hai</a>, 
+      <a href="https://github.com/Web4application/fadaka" target="_blank">Fadaka Blockchain</a>, 
+      <a href="https://github.com/Web4application/RODAAI" target="_blank">RODAAI</a>, 
+      <a href="https://github.com/Web4application/Web4asset" target="_blank">Web4Asset</a>, 
+      and more. Welcome to the republic of code.
+    </div>
+
+    <script>
+      let progress = 0;
+      const bar = document.getElementById('progressBar');
+      const commentBox = document.getElementById('commentBox');
+
+      function simulateJobProgress() {
+        const interval = setInterval(() => {
+          if (progress >= 100) {
+            clearInterval(interval);
+            commentBox.innerHTML = `
+              <strong>AI Review Comments:</strong><br><br>
+              ✅ Refactored inefficient loop at <code>utils/helpers.py:45</code>.<br>
+              🛡️ Suggested stronger typing in <code>main.py</code>.<br>
+              🧹 Cleaned unused imports in <code>api/views.py</code>.<br>
+              🔒 Security tip: avoid exposing tokens in logs.<br>
+            `;
+            return;
+          }
+          progress += Math.random() * 10;
+          bar.style.width = Math.min(progress, 100) + "%";
+          commentBox.innerHTML = `<strong>AI Review Comments:</strong><br><br><em>Analyzing diffs... (${Math.floor(progress)}%)</em>`;
+        }, 600);
+      }
+
+      simulateJobProgress();
+
+      async function loadAIComments(jobId) {
+        commentBox.innerHTML = "🔄 Loading AI review comments...";
+        try {
+          const response = await fetch(`/api/comments?job_id=${jobId}`);
+          const data = await response.json();
+          commentBox.innerHTML = "<strong>AI Review Comments:</strong><br><br>" + data.comments_html;
+        } catch (error) {
+          commentBox.innerHTML = "❌ Failed to load comments.";
+          console.error(error);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const jobId = "12345"; // You can replace this with a real job ID
+        loadAIComments(jobId);
+      });
+    </script>
+  </body>
+</html>
