@@ -22,5 +22,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start"
+  },
+  "scripts": {
+  "dev:frontend": "cd frontend && npm run dev",
+  "build:frontend": "cd frontend && npm run build"
   }
 }
