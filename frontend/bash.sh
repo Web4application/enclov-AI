@@ -6,3 +6,5 @@ npx create-next-app@latest qubuhub-enclovai
 cd qubuhub-enclovai
 npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
+cd enclov-AI
+npx create-next-app@latest frontend --typescript
