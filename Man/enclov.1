@@ -5,14 +5,94 @@ enclov \- privacy-first AI assistant
 .B enclov
 [\fIoptions\fR] [\fIcommands\fR]
 .SH DESCRIPTION
-Enclov-AI is a local-first, containerized AI platform. This manual documents the CLI interface.
+Enclov-AI is a privacy-first, containerized artificial intelligence platform designed to operate locally or in secure edge environments.
+
+It provides GPT-powered code review, natural language processing, and contextual automation — all configurable via a unified command-line interface and extensible via configuration files.
+
 .SH OPTIONS
 .TP
 .BR --version
-Show version info
+Display current version of enclov.
 .TP
 .BR --start
-Launch enclov-AI container
+Launch enclov-AI container stack (FastAPI + Redis + Celery).
 .TP
-.BR --config
-Path to configuration file
+.BR --stop
+Stop running enclov-AI services.
+.TP
+.BR --restart
+Restart enclov-AI stack.
+.TP
+.BR --config " <path>"
+Use a custom configuration file (default: \fI./.env\fR).
+.TP
+.BR --status
+Display current status of enclov-AI containers.
+.TP
+.BR --logs
+View live logs from enclov-AI services.
+.TP
+.BR --update
+Pull the latest version of enclov-AI from GitHub and rebuild.
+.TP
+.BR --help
+Display help and usage information.
+
+.SH COMMANDS
+.TP
+.B review
+Trigger a manual code review on a target repository or directory.
+.TP
+.B test
+Run self-checks and integration tests for enclov-AI stack.
+.TP
+.B webhook
+Start the webhook server manually (typically auto-started with \fB--start\fR).
+
+.SH EXAMPLES
+Start enclov and load environment config:
+
+.EX
+$ enclov --start --config .env.local
+.EE
+
+Trigger a manual review of a repo:
+
+.EX
+$ enclov review /path/to/repo
+.EE
+
+Check container status:
+
+.EX
+$ enclov --status
+.EE
+
+.SH FILES
+.I ~/.enclov/config
+Default user configuration.
+.br
+.I /usr/local/bin/enclov
+Main executable.
+
+.SH ENVIRONMENT
+.TP
+.B OPENAI_API_KEY
+Used for GPT-based code review and NLP tasks.
+.TP
+.B GITHUB_APP_SECRET
+Used for verifying incoming webhook requests.
+.TP
+.B ENCLOV_MODE
+Set to \fBdevelopment\fR or \fBproduction\fR to switch runtime context.
+
+.SH SEE ALSO
+.BR docker (1),
+.BR fastapi (1),
+.BR celery (1)
+
+.SH AUTHOR
+Written by Kubu Lee.
+
+.SH COPYRIGHT
+MIT License. Copyright © 2025 Web4application.
