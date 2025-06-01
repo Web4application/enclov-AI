@@ -6,9 +6,8 @@ import httpx
 import os
 from api.routes import comments
 
-app.include_router(comments.router)
-
 app = FastAPI()
+app.include_router(comments.router)
 
 GITHUB_WEBHOOK_SECRET = os.getenv("GITHUB_WEBHOOK_SECRET")
 GITHUB_APP_ID = os.getenv("GITHUB_APP_ID")
@@ -22,6 +21,8 @@ def verify_signature(request_body: bytes, signature: str):
     mac = hmac.new(GITHUB_WEBHOOK_SECRET.encode(), msg=request_body, digestmod=hashlib.sha256)
     expected_signature = "sha256=" + mac.hexdigest()
     return hmac.compare_digest(expected_signature, signature)
+    if not x_hub_signature_256:
+    raise HTTPException(status_code=400, detail="Missing signature")
 
 def create_jwt():
     with open(GITHUB_PRIVATE_KEY_PATH, "r") as key_file:
