@@ -50,4 +50,11 @@ async def analyze_code_diff(diff: str = Body(..., embed=True)):
     # This is a stub for direct diff input (non-GitHub use)
     from core.ai_review import generate_ai_review_comment
     return {"comment": generate_ai_review_comment(diff)}
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+async function fetchComments(jobId: string) {
+  const res = await fetch(`${API_BASE_URL}/api/comments?job_id=${jobId}`);
+  const data = await res.json();
+  return data;
+}
 
