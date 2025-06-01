@@ -5,4 +5,4 @@ uvicorn enclov_ai_backend:app --reload
 celery -A enclov_ai_backend.celery_app worker --loglevel=info
 pip install fastapi uvicorn celery redis pydantic mlflow optuna shap
 pip install -r requirements.txt
-
+base64 -w 0 kubeconfig.yaml
