@@ -3,9 +3,77 @@
 enclov-start \- start Enclov AI container
 .SH SYNOPSIS
 .B enclov start
+[\fIoptions\fR]
 .SH DESCRIPTION
-Starts the Enclov container locally.
+The \fBenclov start\fR command initializes and launches the full Enclov-AI container stack locally, including:
+
+.IP \[bu] 2
+FastAPI backend service
+.IP \[bu]
+Redis in-memory datastore
+.IP \[bu]
+Celery worker for async background jobs
+
+This command requires Docker and Docker Compose to be installed and available in the system path.
+
 .SH OPTIONS
 .TP
 .BR --help
-Show help for start command.
+Show usage information for the \fBstart\fR command and exit.
+.TP
+.BR --no-cache
+Rebuild containers without using the Docker build cache.
+.TP
+.BR --config " <path>"
+Path to custom environment configuration file (default: \fI.env\fR).
+
+.SH EXAMPLES
+Start Enclov with the default configuration:
+
+.EX
+$ enclov start
+.EE
+
+Start Enclov using a custom config file and rebuild containers:
+
+.EX
+$ enclov start --config .env.local --no-cache
+.EE
+
+.SH ENVIRONMENT
+.TP
+.B ENCLOV_ENV
+Defines the runtime environment: \fBdevelopment\fR or \fBproduction\fR.
+.TP
+.B DOCKER_HOST
+Specifies Docker daemon host, if not running locally.
+
+.SH EXIT STATUS
+.TP
+.B 0
+Successful start
+.TP
+.B 1
+Failed to launch services
+.TP
+.B 2
+Invalid configuration or environment missing
+
+.SH FILES
+.TP
+.B docker-compose.yml
+Defines the core container services for enclov.
+.TP
+.B .env
+Environment variable file loaded on start.
+
+.SH SEE ALSO
+.BR enclov (1),
+.BR enclov-stop (1),
+.BR enclov-status (1)
+
+.SH AUTHOR
+Written by Kubu Lee.
+
+.SH COPYRIGHT
+MIT License © 2025 Web4application.
