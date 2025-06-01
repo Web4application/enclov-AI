@@ -130,7 +130,26 @@
   .then(data => {
     commentBox.innerHTML = "<strong>AI Review Comments:</strong><br><br>" + data.comments_html;
   });
-);
-  </script>
+                        
+  <script>
+    async function loadAIComments(jobId) {
+    const commentBox = document.getElementById("commentBox");
+    commentBox.innerHTML = "🔄 Loading AI review comments...";
+    try {
+      const response = await fetch(`/api/comments?job_id=${jobId}`);
+      const data = await response.json();
+      commentBox.innerHTML = "<strong>AI Review Comments:</strong><br><br>" + data.comments_html;
+    } catch (error) {
+      commentBox.innerHTML = "❌ Failed to load comments.";
+      console.error(error);
+    }
+  }
+
+  // Auto-load comments when page loads
+  document.addEventListener("DOMContentLoaded", () => {
+    const jobId = "12345"; // You should dynamically inject or fetch the real job ID
+    loadAIComments(jobId);
+  });
+</script>
 </body>
 </html>
