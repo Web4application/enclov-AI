@@ -1,4 +1,4 @@
-name: enclov-AI PR Review
+name: AI Code Review
 
 on:
   pull_request:
@@ -9,11 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - name: AI Code Reviewer
+        uses: web4application/ai-code-reviewer@main
         with:
-          python-version: '3.10'
-      - name: Install GitHub CLI
-        uses: cli/cli-action@v2
-      - name: Run enclov-AI PR Review
-        run: bash scripts/gh/auto_review.sh ${{ github.event.pull_request.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
