@@ -109,7 +109,7 @@
     const commentBox = document.getElementById('commentBox');
 
     function simulateJobProgress() {
-      const interval = setInterval(() => {
+      setInterval(() => loadAIComments("12345"), 5000);
         if (progress >= 100) {
           clearInterval(interval);
           commentBox.innerHTML = `
