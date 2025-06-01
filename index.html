@@ -88,9 +88,14 @@
 
   <!-- Simulated Comments Output -->
   <div class="comments-box" id="commentBox">
-    <strong>AI Review Comments:</strong><br><br>
-    <em>Waiting for job to start...</em>
-  </div>
+  <strong>AI Review Comments:</strong><br><br>
+  <ul style="padding-left: 1.2rem; margin: 0;">
+    <li>✅ <strong>Refactored</strong> inefficient loop at <code>utils/helpers.py:45</code>.</li>
+    <li>🛡️ <strong>Suggested</strong> stronger typing in <code>main.py</code>.</li>
+    <li>🧹 <strong>Removed</strong> unused imports in <code>api/views.py</code>.</li>
+    <li>🔒 <strong>Security note:</strong> avoid exposing tokens in logs.</li>
+  </ul>
+</div>
 
   <div class="footer">
     &copy; 2025 enclov-AI by Kubu Lee. Built with containers, code, and conviction.
@@ -120,7 +125,11 @@
       }, 600);
     }
 
-    simulateJobProgress(fetch('/api/status/job-id')
+    simulateJobProgress(fetch('/api/comments?job_id=xyz')
+  .then(res => res.json())
+  .then(data => {
+    commentBox.innerHTML = "<strong>AI Review Comments:</strong><br><br>" + data.comments_html;
+  });
 );
   </script>
 </body>
