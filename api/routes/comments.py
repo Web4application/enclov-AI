@@ -41,3 +41,13 @@ async def github_webhook(
             return {"msg": "AI review posted"}
 
     return {"msg": "Event ignored"}
+    from fastapi import APIRouter, Body
+
+router = APIRouter(prefix="/comments", tags=["AI Review"])
+
+@router.post("/analyze")
+async def analyze_code_diff(diff: str = Body(..., embed=True)):
+    # This is a stub for direct diff input (non-GitHub use)
+    from core.ai_review import generate_ai_review_comment
+    return {"comment": generate_ai_review_comment(diff)}
+
