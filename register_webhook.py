@@ -1,36 +1,129 @@
+import hmac
+import hashlib
+import json
 import os
+import time
+from fastapi import FastAPI, Header, HTTPException, Request
+from urllib.parse import urlparse
+
 import httpx
+import jwt
+import openai
 
-GITHUB_TOKEN = os.getenv("GITHUB_ACCESS_TOKEN")
-REPO = "your-username/your-repo"  # replace this
-WEBHOOK_URL = "https://yourdomain.com/webhook"  # your deployed FastAPI endpoint
-WEBHOOK_SECRET = os.getenv("GITHUB_WEBHOOK_SECRET")
+app = FastAPI()
 
-async def register_webhook():
-    url = f"https://api.github.com/repos/{REPO}/hooks"
-    headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
-    }
+# Required env vars
+GITHUB_WEBHOOK_SECRET = os.getenv("GITHUB_WEBHOOK_SECRET")
+GITHUB_APP_ID = os.getenv("GITHUB_APP_ID")
+GITHUB_PRIVATE_KEY_PATH = os.getenv("GITHUB_PRIVATE_KEY_PATH")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+openai.api_key = OPENAI_API_KEY
+
+def verify_signature(request_body: bytes, signature: str):
+    mac = hmac.new(GITHUB_WEBHOOK_SECRET.encode(), msg=request_body, digestmod=hashlib.sha256)
+    expected_signature = "sha256=" + mac.hexdigest()
+    return hmac.compare_digest(expected_signature, signature)
+
+def create_jwt():
+    with open(GITHUB_PRIVATE_KEY_PATH, "r") as key_file:
+        private_key = key_file.read()
+    now = int(time.time())
     payload = {
-        "name": "web",
-        "active": True,
-        "events": ["pull_request"],
-        "config": {
-            "url": WEBHOOK_URL,
-            "content_type": "json",
-            "secret": WEBHOOK_SECRET,
-            "insecure_ssl": "0"
-        }
+        "iat": now,
+        "exp": now + (10 * 60),
+        "iss": GITHUB_APP_ID
     }
+    token = jwt.encode(payload, private_key, algorithm="RS256")
+    return token
 
+def is_valid_github_url(url: str) -> bool:
+    try:
+        parsed_url = urlparse(url)
+        return (
+            parsed_url.scheme == "https" and
+            parsed_url.netloc in {"github.com", "raw.githubusercontent.com"}
+        )
+    except Exception:
+        return False
+
+async def get_installation_access_token(installation_id: int):
+    jwt_token = create_jwt()
+    url = f"https://api.github.com/app/installations/{installation_id}/access_tokens"
+    headers = {
+        "Authorization": f"Bearer {jwt_token}",
+        "Accept": "application/vnd.github+json"
+    }
     async with httpx.AsyncClient() as client:
-        response = await client.post(url, json=payload, headers=headers)
-        if response.status_code == 201:
-            print("Webhook registered successfully!")
-        else:
-            print(f"Failed to register webhook: {response.status_code} {response.text}")
+        r = await client.post(url, headers=headers)
+        r.raise_for_status()
+        return r.json()["token"]
 
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(register_webhook())
+async def post_review_comment(repo_full_name: str, pr_number: int, body: str, token: str):
+    url = f"https://api.github.com/repos/{repo_full_name}/pulls/{pr_number}/reviews"
+    headers = {
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github+json"
+    }
+    data = {
+        "body": body,
+        "event": "COMMENT"
+    }
+    async with httpx.AsyncClient() as client:
+        r = await client.post(url, json=data, headers=headers)
+        r.raise_for_status()
+        return r.json()
+
+async def analyze_diff_with_openai(diff_text: str) -> str:
+    prompt = (
+        "You are a meticulous AI code reviewer. Analyze this Git diff and provide a concise "
+        "review with suggestions, potential bugs, style issues, and security concerns.\n\n"
+        f"Diff:\n{diff_text}\n\nReview:"
+    )
+    try:
+        response = await openai.ChatCompletion.acreate(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=500,
+            temperature=0.3,
+        )
+        review_text = response.choices[0].message.content.strip()
+        return review_text
+    except Exception as e:
+        return f"AI review failed: {str(e)}"
+
+@app.post("/webhook")
+async def github_webhook(request: Request, x_hub_signature_256: str = Header(None), x_github_event: str = Header(None)):
+    body_bytes = await request.body()
+
+    if not verify_signature(body_bytes, x_hub_signature_256):
+        raise HTTPException(status_code=401, detail="Invalid signature")
+
+    payload = json.loads(body_bytes)
+
+    if x_github_event == "pull_request":
+        action = payload.get("action")
+        if action in ["opened", "synchronize", "reopened"]:
+            pr = payload["pull_request"]
+            pr_number = pr["number"]
+            repo = payload["repository"]["full_name"]
+            installation_id = payload["installation"]["id"]
+            code_diff_url = pr["diff_url"]
+
+            if not is_valid_github_url(code_diff_url):
+                raise HTTPException(status_code=400, detail="Invalid diff URL")
+
+            token = await get_installation_access_token(installation_id)
+
+            async with httpx.AsyncClient() as client:
+                diff_resp = await client.get(code_diff_url)
+                diff_resp.raise_for_status()
+                diff_text = diff_resp.text
+
+            ai_review_comment = await analyze_diff_with_openai(diff_text)
+
+            await post_review_comment(repo, pr_number, ai_review_comment, token)
+
+            return {"msg": "AI review comment posted"}
+
+    return {"msg": "Event ignored"}
