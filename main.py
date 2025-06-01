@@ -1,70 +1,27 @@
-import hmac
-import hashlib
-import json
 from fastapi import FastAPI, Header, HTTPException, Request
-import httpx
-import os
+import json
 from api.routes import comments
 
-app = FastAPI()
+from core.security import verify_signature
+from core.github_auth import get_installation_access_token
+from core.ai_review import generate_ai_review_comment
+import httpx
+
+app = FastAPI(
+    title="Enclov-AI",
+    version="0.1.0",
+    description="Privacy-first AI assistant for code reviews and PR automation."
+)
+
+# Mount all routers (API endpoints)
 app.include_router(comments.router)
 
-GITHUB_WEBHOOK_SECRET = os.getenv("GITHUB_WEBHOOK_SECRET")
-GITHUB_APP_ID = os.getenv("GITHUB_APP_ID")
-GITHUB_PRIVATE_KEY_PATH = os.getenv("GITHUB_PRIVATE_KEY_PATH")  # .pem file path
-
-# You'll need PyJWT, cryptography to create JWT for GitHub App auth
-import jwt
-import time
-
-def verify_signature(request_body: bytes, signature: str):
-    mac = hmac.new(GITHUB_WEBHOOK_SECRET.encode(), msg=request_body, digestmod=hashlib.sha256)
-    expected_signature = "sha256=" + mac.hexdigest()
-    return hmac.compare_digest(expected_signature, signature)
-    if not x_hub_signature_256:
-    raise HTTPException(status_code=400, detail="Missing signature")
-
-def create_jwt():
-    with open(GITHUB_PRIVATE_KEY_PATH, "r") as key_file:
-        private_key = key_file.read()
-    now = int(time.time())
-    payload = {
-        "iat": now,
-        "exp": now + (10 * 60),  # 10 minutes expiration
-        "iss": GITHUB_APP_ID
-    }
-    token = jwt.encode(payload, private_key, algorithm="RS256")
-    return token
-
-async def get_installation_access_token(installation_id: int):
-    jwt_token = create_jwt()
-    url = f"https://api.github.com/app/installations/{installation_id}/access_tokens"
-    headers = {
-        "Authorization": f"Bearer {jwt_token}",
-        "Accept": "application/vnd.github+json"
-    }
-    async with httpx.AsyncClient() as client:
-        r = await client.post(url, headers=headers)
-        r.raise_for_status()
-        return r.json()["token"]
-
-async def post_review_comment(repo_full_name: str, pr_number: int, body: str, token: str):
-    url = f"https://api.github.com/repos/{repo_full_name}/pulls/{pr_number}/reviews"
-    headers = {
-        "Authorization": f"token {token}",
-        "Accept": "application/vnd.github+json"
-    }
-    data = {
-        "body": body,
-        "event": "COMMENT"
-    }
-    async with httpx.AsyncClient() as client:
-        r = await client.post(url, json=data, headers=headers)
-        r.raise_for_status()
-        return r.json()
-
 @app.post("/webhook")
-async def github_webhook(request: Request, x_hub_signature_256: str = Header(None), x_github_event: str = Header(None)):
+async def github_webhook(
+    request: Request,
+    x_hub_signature_256: str = Header(None),
+    x_github_event: str = Header(None)
+):
     body_bytes = await request.body()
 
     if not verify_signature(body_bytes, x_hub_signature_256):
@@ -81,22 +38,32 @@ async def github_webhook(request: Request, x_hub_signature_256: str = Header(Non
             installation_id = payload["installation"]["id"]
             code_diff_url = pr["diff_url"]
 
-            # 1. Get access token for the installation
+            # 1. Get GitHub App token
             token = await get_installation_access_token(installation_id)
 
-            # 2. Fetch the PR diff content (for analysis)
+            # 2. Fetch PR diff
             async with httpx.AsyncClient() as client:
                 diff_resp = await client.get(code_diff_url)
                 diff_resp.raise_for_status()
                 diff_text = diff_resp.text
 
-            # 3. Here, run your AI model or API call to analyze `diff_text`
-            # For demo, let's do a mock comment:
-            ai_review_comment = "Hello from enclov-AI! This is a placeholder review comment."
+            # 3. Generate AI review comment
+            ai_review_comment = generate_ai_review_comment(diff_text)
 
-            # 4. Post comment on PR review
-            await post_review_comment(repo, pr_number, ai_review_comment, token)
+            # 4. Post review comment
+            review_url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/reviews"
+            headers = {
+                "Authorization": f"token {token}",
+                "Accept": "application/vnd.github+json"
+            }
+            data = {
+                "body": ai_review_comment,
+                "event": "COMMENT"
+            }
+            async with httpx.AsyncClient() as client:
+                r = await client.post(review_url, headers=headers, json=data)
+                r.raise_for_status()
 
-            return {"msg": "Review comment posted"}
+            return {"msg": "AI review comment posted"}
 
     return {"msg": "Event ignored"}
