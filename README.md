@@ -1,37 +1,53 @@
-# AI-Powered PR Code Reviewer
+# enclov-AI
 
-This repository hosts an AI-powered GitHub pull request code review system that analyzes diffs and posts review comments automatically.
-
-## Features
-
-- Analyzes PR diffs using AI to identify bugs, security issues, and style problems.
-- Posts AI-generated review comments directly on the PR.
-- Runs automatically on PR open, update, or reopen events.
-- Easy to extend with new languages, prompts, and integrations.
-
-## Setup
-
-1. **Create a GitHub repository** and push this code.
-
-2. **Add the GitHub Actions workflow** in `.github/workflows/ai_pr_review.yml`.
-
-3. **Ensure your repo has a GitHub token** set as a secret (usually `GITHUB_TOKEN` is provided automatically).
-
-4. **Configure environment variables** as needed if running locally (see `.env.example`).
-
-5. **Push a PR** to trigger the workflow and see AI comments on your PR.
-
-## Development
-
-- The main logic is in `ai_code_review.py`.
-- Modify prompts or add parsing logic to improve AI feedback precision.
-- Add support for inline comments by mapping AI feedback to diff positions.
-
-## Contribution
-
-Contributions, issues, and feature requests are welcome. Please open an issue or pull request.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Build Status](https://github.com/Web4application/enclov-AI/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/Web4application/enclov-AI/actions)
 
 ---
 
-**Keep your code clean. Let AI handle the hard part.**
+![enclov-AI Banner](./docs/assets/enclov-ai-banner.png)
 
+**Automated AI-Powered GitHub Pull Request Reviewer**
+
+Enclov-AI seamlessly integrates with GitHub as a webhook-powered AI assistant that analyzes pull request diffs and generates insightful code reviews, leveraging OpenAI's GPT models.
+
+---
+
+## 🚀 Features
+
+- **Webhook Listener:** Real-time pull request event handling from GitHub.
+- **Secure Verification:** HMAC SHA-256 signature validation for payload security.
+- **GitHub App Authentication:** JWT-based authentication for API access.
+- **AI-Powered Review:** Uses OpenAI GPT-4o-mini to produce contextual PR feedback.
+- **Automated Comments:** Posts review comments directly on GitHub PRs.
+- **Docker & CI/CD:** Ready for containerized deployment and continuous integration.
+
+---
+
+## 📸 Demo
+
+![Webhook Flow](./docs/assets/webhook-flow.png)
+
+*Illustration of webhook event flow and AI review posting.*
+
+---
+
+## 🛠️ Installation
+
+### Prerequisites
+
+- Python 3.10 or newer
+- Docker (optional)
+- GitHub App with configured webhook secret and private key
+- OpenAI API key
+
+### Setup Environment Variables
+
+Create a `.env` file in your project root:
+
+```env
+GITHUB_WEBHOOK_SECRET=your_webhook_secret_here
+GITHUB_APP_ID=your_github_app_id_here
+GITHUB_PRIVATE_KEY_PATH=/path/to/private-key.pem
+OPENAI_API_KEY=your_openai_api_key_here

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enclov-ai-web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: enclov-ai-web
+  template:
+    metadata:
+      labels:
+        app: enclov-ai-web
+    spec:
+      containers:
+        - name: web
+          image: your-dockerhub-user/enclov-ai:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: enclov-secrets
+                  key: OPENAI_API_KEY
+            - name: APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: enclov-secrets
+                  key: APP_ID
+            - name: PRIVATE_KEY_PATH
+              value: /keys/private_key.pem
+          volumeMounts:
+            - name: private-key
+              mountPath: /keys/private_key.pem
+              subPath: private_key.pem
+      volumes:
+        - name: private-key
+          secret:
+            secretName: enclov-private-key

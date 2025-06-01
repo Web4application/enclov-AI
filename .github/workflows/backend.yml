@@ -1,0 +1,33 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install fastapi uvicorn pydantic pytest
+
+      - name: Run tests
+        run: pytest tests/
+
+      - name: Build Docker image
+        run: docker build -t your-dockerhub-username/enclov-ai-backend:latest backend/
+
+      # Optional: Push to Docker Hub or deploy to cloud here

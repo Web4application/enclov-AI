@@ -1,0 +1,32 @@
+name: Generate Man Page
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  gen-man:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install enclov CLI (if needed)
+        run: |
+          # Adapt this based on how enclov is built or installed
+          npm install -g ./  # if it's a local Node.js CLI tool
+
+      - name: Generate man page
+        run: python .github/scripts/generate_man.py
+
+      - name: Upload man page artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: enclov-man-page
+          path: man/enclov.1
