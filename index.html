@@ -4,167 +4,109 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>enclov-AI — AI-Powered GitHub PR Code Reviewer</title>
-  <meta name="description" content="enclov-AI automates GitHub pull request reviews with AI-powered insights using OpenAI GPT models. FastAPI, Celery, Redis, Dockerized." />
-  <meta property="og:title" content="enclov-AI — AI-Powered GitHub PR Code Reviewer" />
-  <meta property="og:description" content="Revolutionize your PR workflow with AI-powered code reviews that analyze diffs and provide expert feedback directly in GitHub." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://github.com/Web4application/enclov-AI" />
-  <meta property="og:image" content="https://yourdomain.com/path-to-logo-or-screenshot.png" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="enclov-AI — AI-Powered GitHub PR Code Reviewer" />
-  <meta name="twitter:description" content="Automate GitHub PR reviews with OpenAI GPT-powered AI. FastAPI backend, Celery, Redis, and Docker deployment." />
-  <meta name="twitter:image" content="https://yourdomain.com/path-to-logo-or-screenshot.png" />
+  <meta name="description" content="AI-powered PR review for GitHub using FastAPI, Celery, and GPT models." />
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0; padding: 0; background: #121212; color: #e0e0e0;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      min-height: 100vh;
-      text-align: center;
-      padding: 2rem;
-      transition: background-color 0.3s ease, color 0.3s ease;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      min-height: 100vh; padding: 2rem;
     }
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 0.2em;
-      color: #4caf50;
-      text-shadow: 0 0 8px #4caf50cc;
-    }
-    p.lead {
-      font-size: 1.3rem;
-      margin-bottom: 2rem;
-      max-width: 600px;
-      line-height: 1.6;
-      color: #bfbfbf;
-    }
+    h1 { font-size: 3rem; color: #4caf50; text-shadow: 0 0 8px #4caf50cc; }
+    h2 { font-size: 2rem; margin-top: 2rem; color: #81c784; text-shadow: 0 0 6px #81c784cc; }
+    p.lead { font-size: 1.3rem; max-width: 600px; line-height: 1.6; color: #bfbfbf; margin: 1rem auto; }
     a.button {
-      display: inline-block;
-      background-color: #4caf50;
-      color: white;
-      text-decoration: none;
-      padding: 0.9em 2em;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 1.1rem;
-      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+      background-color: #4caf50; color: white; padding: 0.9em 2em; border-radius: 6px;
+      font-weight: 600; font-size: 1.1rem; text-decoration: none; margin: 1rem 0;
       transition: background-color 0.3s ease, transform 0.2s ease;
-      margin-bottom: 2rem;
-      user-select: none;
     }
-    a.button:hover,
-    a.button:focus {
-      background-color: #3a9d3a;
-      outline: none;
-      transform: scale(1.05);
-      box-shadow: 0 6px 16px rgba(58, 157, 58, 0.7);
-      cursor: pointer;
+    a.button:hover { background-color: #3a9d3a; transform: scale(1.05); cursor: pointer; }
+    ul.features-list { list-style: none; padding: 0; max-width: 420px; text-align: left; }
+    ul.features-list li::before { content: '•'; color: #4caf50; margin-right: 0.5em; }
+    footer { margin-top: 3rem; font-size: 0.9rem; color: #666; }
+    #job-progress, #comments-list, #diff-output {
+      background: #1e1e1e; padding: 1rem; border-radius: 8px;
+      width: 100%; max-width: 720px; margin: 1rem 0; text-align: left;
     }
-    a.button:focus-visible {
-      outline: 2px solid #76ff03;
-      outline-offset: 4px;
-    }
-    section {
-      max-width: 700px;
-      margin-bottom: 3rem;
-    }
-    section h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      color: #81c784;
-      text-shadow: 0 0 6px #81c784cc;
-    }
-    ul.features-list {
-      list-style: none;
-      padding: 0;
-      margin: 0 auto;
-      max-width: 420px;
-      text-align: left;
-      color: #d0d0d0;
-    }
-    ul.features-list li {
-      margin-bottom: 1rem;
-      position: relative;
-      padding-left: 1.5em;
-      font-weight: 500;
-    }
-    ul.features-list li::before {
-      content: '•';
-      position: absolute;
-      left: 0;
-      color: #4caf50;
-      font-weight: 700;
-      font-size: 1.3rem;
-      line-height: 1;
-      top: 0.1em;
-    }
-    footer {
-      margin-top: auto;
-      font-size: 0.9rem;
-      color: #666;
-      user-select: none;
-    }
-    code {
-      background: #222;
-      padding: 0.2em 0.5em;
-      border-radius: 3px;
-      font-family: monospace;
-      color: #80cbc4;
-    }
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 2.2rem;
-      }
-      p.lead {
-        font-size: 1.1rem;
-      }
-      a.button {
-        font-size: 1rem;
-        padding: 0.8em 1.5em;
-      }
-      section {
-        padding: 0 1rem;
-      }
-      ul.features-list {
-        max-width: 100%;
-      }
-    }
+    code { background: #222; padding: 0.2em 0.5em; border-radius: 3px; color: #80cbc4; }
   </style>
 </head>
 <body>
 
   <h1>enclov-AI</h1>
   <p class="lead">
-    Revolutionize your GitHub pull request workflow with AI-powered, automatic code reviews.  
+    Revolutionize your GitHub PR workflow with AI-powered, automatic code reviews.  
     <code>enclov-AI</code> analyzes your diffs, spots issues, and delivers expert-level feedback — all within GitHub.
   </p>
 
-  <a class="button" href="https://github.com/Web4application/enclov-AI" target="_blank" rel="noopener" aria-label="View enclov-AI on GitHub">
+  <a class="button" href="https://github.com/Web4application/enclov-AI" target="_blank">
     View on GitHub
   </a>
 
   <section>
     <h2>Features</h2>
     <ul class="features-list">
-      <li>AI-powered review comments generated by OpenAI GPT models</li>
-      <li>Seamless GitHub App integration via webhooks</li>
-      <li>Detailed feedback on code diffs and pull requests</li>
-      <li>Built with FastAPI, Celery, and Redis for scalable performance</li>
-      <li>Easy to deploy with Docker and Docker Compose</li>
+      <li>AI-powered review comments from OpenAI models</li>
+      <li>Live GitHub Actions job monitoring</li>
+      <li>Diff-based PR review summaries</li>
+      <li>Built with FastAPI, Celery, Redis, and Docker</li>
+      <li>Comment and workflow visibility in one dashboard</li>
     </ul>
   </section>
 
   <section>
-    <h2>Get Started</h2>
-    <p>
-      1. Install the <code>enclov-AI</code> GitHub App on your repository.<br />
-      2. Configure webhook URL pointing to your FastAPI server.<br />
-      3. Open or update pull requests — sit back and watch AI-powered reviews roll in.
-    </p>
+    <h2>🟢 Live Job Progress</h2>
+    <div id="job-progress">Loading latest workflow...</div>
+  </section>
+
+  <section>
+    <h2>💬 PR Comments</h2>
+    <div id="comments-list">Loading comments...</div>
   </section>
 
   <footer>
-    &copy; 2025 enclov-AI by Kubu Lee. Built with passion, code, and AI.
+    &copy; 2025 enclov-AI by Kubu Lee. Built with discipline, doubt, and AI.
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const REPO = 'Web4application/enclov-AI';
+    const PR_NUMBER = 1; // Replace with dynamic value if needed
+
+    async function fetchWorkflowStatus() {
+      try {
+        const res = await axios.get(`https://api.github.com/repos/${REPO}/actions/runs`);
+        const latest = res.data.workflow_runs[0];
+        document.getElementById('job-progress').innerHTML = `
+          <strong>${latest.name}</strong><br/>
+          Status: ${latest.status}<br/>
+          Conclusion: ${latest.conclusion || 'Running...'}<br/>
+          Run ID: ${latest.id}
+        `;
+      } catch (err) {
+        document.getElementById('job-progress').textContent = 'Error loading job status.';
+        console.error(err);
+      }
+    }
+
+    async function fetchPRComments() {
+      try {
+        const res = await axios.get(`https://api.github.com/repos/${REPO}/pulls/${PR_NUMBER}/comments`);
+        const comments = res.data;
+        if (!comments.length) {
+          document.getElementById('comments-list').innerHTML = '<em>No comments found yet.</em>';
+          return;
+        }
+        document.getElementById('comments-list').innerHTML =
+          comments.map(c => `<p><strong>@${c.user.login}</strong>: ${c.body}</p>`).join('');
+      } catch (err) {
+        document.getElementById('comments-list').textContent = 'Error loading comments.';
+        console.error(err);
+      }
+    }
+
+    fetchWorkflowStatus();
+    fetchPRComments();
+  </script>
 </body>
 </html>
