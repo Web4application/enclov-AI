@@ -4,6 +4,9 @@ import json
 from fastapi import FastAPI, Header, HTTPException, Request
 import httpx
 import os
+from api.routes import comments
+
+app.include_router(comments.router)
 
 app = FastAPI()
 
