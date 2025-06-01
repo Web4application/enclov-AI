@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 
 # Define all commands with their descriptions and options
