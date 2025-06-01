@@ -119,7 +119,7 @@ You can deploy the static HTML to [Vercel](https://vercel.com/) and the FastAPI 
 ## 👤 Author
 
 **Kubu Lee**
-[GitHub](https://github.com/Web4application) • `enclov-AI` Maintainer • Builder of AI, Web3, & Insight Engines
+[GitHub](https://github.com/Web4application) • `enclov-AI` Maintainer • Builder of AI, Web4, & Insight Engines
 
 ---
 
