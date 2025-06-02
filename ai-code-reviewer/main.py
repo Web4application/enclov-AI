@@ -1,48 +1,38 @@
 import os
-import openai
-import requests
+import json
 from github import Github
-
-openai.api_key = os.getenv("OPENAI_API_KEY")
-gh = Github(os.getenv("GITHUB_TOKEN"))
-
-def get_pr_info():
-    repo = os.getenv("GITHUB_REPOSITORY")
-    pr_number = int(os.getenv("GITHUB_REF").split('/')[-1])
-    return gh.get_repo(repo).get_pull(pr_number)
-
-def get_changed_code(pr):
-    diff_url = pr.diff_url
-    r = requests.get(diff_url, headers={"Authorization": f"token {os.getenv('GITHUB_TOKEN')}"})
-    r.raise_for_status()
-    return r.text
-
-def review_code(code_diff):
-    prompt = f"""
-You are a senior code reviewer. Review this GitHub pull request diff.
-Give concise, constructive feedback on improvements, bugs, or best practices.
-
-Diff:
-{code_diff[:3000]}  # OpenAI token limit safety
-
-Review:
-"""
-    response = openai.ChatCompletion.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=500,
-        temperature=0.3,
-    )
-    return response.choices[0].message.content.strip()
-
-def post_review(pr, review):
-    pr.create_issue_comment(f"🧠 **AI Code Review:**\n\n{review}")
+from utils import github_inline, triage
+import openai
 
 def main():
-    pr = get_pr_info()
-    code_diff = get_changed_code(pr)
-    review = review_code(code_diff)
-    post_review(pr, review)
+    github_token = os.getenv("GITHUB_TOKEN")
+    openai_key = os.getenv("OPENAI_API_KEY")
+    repo_name = os.getenv("GITHUB_REPOSITORY")
+    pr_number = int(os.getenv("GITHUB_REF").split("/")[-2])
+
+    gh = Github(github_token)
+    repo = gh.get_repo(repo_name)
+    pr = repo.get_pull(pr_number)
+
+    openai.api_key = openai_key
+
+    # Inline AI Review
+    github_inline.add_inline_review_comments(pr, gh, openai_key)
+
+    # AI PR Triage (Summary + Labels + Reviewers)
+    files_changed = [f.filename for f in pr.get_files()]
+    ai_response = triage.analyze_pr_with_openai(pr.title, pr.body or "", files_changed)
+    summary, labels = triage.extract_labels_from_ai(ai_response)
+
+    if summary:
+        pr.create_issue_comment(f"🧠 **AI Summary:**\n\n{summary}")
+    
+    if labels:
+        pr.add_to_labels(*labels)
+
+    reviewers = triage.match_reviewers_by_paths(files_changed)
+    if reviewers:
+        pr.create_review_request(reviewers=reviewers)
 
 if __name__ == "__main__":
     main()
