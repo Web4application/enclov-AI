@@ -4,6 +4,8 @@ from api.routes import comments
 from models.schema import CommandRequest
 from enclov_commands import allowed_funcs
 from app.routes import submit_pr  # adjust path as needed
+from fastapi import FastAPI
+from submit_pr import router as submit_pr_router
 
 app = FastAPI(
     title="Enclov-AI",
@@ -11,6 +13,8 @@ app = FastAPI(
     description="Privacy-first AI assistant for CLI + PR automation"
 )
 
+app = FastAPI()
+app.include_router(submit_pr_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Caution: lock this down in prod
