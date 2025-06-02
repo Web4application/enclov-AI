@@ -57,20 +57,17 @@ def is_valid_github_url(url: str) -> bool:
         return False
 
 def resolve_and_validate_ip(url: str) -> str:
+    allowed_domains = {
+        "github.com": "140.82.112.4",
+        "raw.githubusercontent.com": "185.199.108.133"
+    }
     try:
         parsed_url = urlparse(url)
         hostname = parsed_url.hostname
-        if not hostname:
-            raise ValueError("Invalid URL: missing hostname")
+        if not hostname or hostname not in allowed_domains:
+            raise ValueError("Invalid or unauthorized hostname")
 
-        # Resolve hostname to IP address
-        ip_address = httpx.get(f"https://dns.google/resolve?name={hostname}").json()["Answer"][0]["data"]
-
-        # Check if IP address is public
-        if ip_address.startswith(("10.", "172.", "192.", "127.", "169.254.", "::1")):
-            raise ValueError("Resolved IP address is private or internal")
-
-        return ip_address
+        return allowed_domains[hostname]
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid URL: {str(e)}")
 
@@ -144,7 +141,7 @@ async def github_webhook(request: Request, x_hub_signature_256: str = Header(Non
 
             validated_ip = resolve_and_validate_ip(code_diff_url)
             async with httpx.AsyncClient() as client:
-                diff_resp = await client.get(f"https://{validated_ip}")
+                diff_resp = await client.get(f"https://{validated_ip}/diff")
                 diff_resp.raise_for_status()
                 diff_text = diff_resp.text
 
