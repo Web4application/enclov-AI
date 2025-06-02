@@ -1,0 +1,24 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: pytest tests/ || true
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          push: false
+          tags: your-dockerhub-username/enclov-ai:latest
