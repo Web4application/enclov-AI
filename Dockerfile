@@ -1,51 +1,39 @@
-# --- Stage 1: Build React frontend ---
-FROM node:18-alpine AS frontend-builder
+# Start from official Python slim base image
+FROM python:3.11-slim as builder
 
-WORKDIR /app/frontend
+WORKDIR /app
 
-COPY frontend/package*.json ./
-RUN npm install
+# Install build dependencies first for speed
+RUN apt-get update && apt-get install -y build-essential gcc libffi-dev curl
 
-COPY frontend/ ./
-ARG REACT_APP_CONFIGCAT_ENV
-ENV REACT_APP_CONFIGCAT_ENV=$REACT_APP_CONFIGCAT_ENV
+# Copy requirements first for better caching
+COPY requirements.txt .
 
-RUN npm run build
+# Install dependencies into a dedicated folder
+RUN python -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install -r requirements.txt
 
-# --- Stage 2: Install backend dependencies ---
-FROM python:3.11-slim AS backend-builder
+# Final stage: minimal runtime image
+FROM python:3.11-slim
 
-WORKDIR /app/backend
+WORKDIR /app
 
-COPY backend/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy virtualenv from builder
+COPY --from=builder /opt/venv /opt/venv
 
-COPY backend/ .
+# Copy app code
+COPY . .
 
-# --- Stage 3: Final image ---
-FROM nginx:stable-alpine
+# Use virtualenv's python and pip
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Install Python and Uvicorn for FastAPI
-RUN apk add --no-cache python3 py3-pip
-RUN pip3 install fastapi uvicorn
+# Drop root privileges by creating a non-root user
+RUN addgroup --system appgroup && adduser --system appuser --ingroup appgroup
+USER appuser
 
-# Clean Nginx default content
-RUN rm -rf /usr/share/nginx/html/*
+# Expose FastAPI port
+EXPOSE 8000
 
-# Copy built React frontend
-COPY --from=frontend-builder /app/frontend/build /usr/share/nginx/html
-
-# Copy FastAPI backend
-COPY --from=backend-builder /app/backend /app/backend
-
-# Nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Startup script
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-
-# Expose ports
-EXPOSE 80 8000
-
-CMD ["/start.sh"]
+# Run uvicorn with optimized flags
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4", "--loop", "uvloop", "--http", "h11"]
