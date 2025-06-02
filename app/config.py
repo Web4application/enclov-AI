@@ -51,17 +51,19 @@ async def github_webhook(request: Request, x_hub_signature_256: str = Header(Non
             comments_url = payload["pull_request"]["comments_url"]
 
             # Define a whitelist of allowed base URLs
-            allowed_base_urls = [
+            allowed_urls = [
                 "https://web4application.github.io/repos/"
             ]
 
             # Parse and validate the comments_url
-            parsed_url = urlparse(comments_url)
-            if not any(comments_url.startswith(base_url) for base_url in allowed_base_urls):
-                raise HTTPException(status_code=400, detail="Invalid comments_url: URL not in allowed whitelist")
-            
-            # Resolve domain to IP and validate against trusted range
             try:
+                parsed_url = urlparse(comments_url)
+                if not parsed_url.scheme in ["http", "https"]:
+                    raise HTTPException(status_code=400, detail="Invalid comments_url: Unsupported URL scheme")
+                if not any(comments_url.startswith(allowed_url) for allowed_url in allowed_urls):
+                    raise HTTPException(status_code=400, detail="Invalid comments_url: URL not in allowed whitelist")
+
+                # Resolve domain to IP and validate against trusted range
                 import socket
                 resolved_ip = socket.gethostbyname(parsed_url.netloc)
                 trusted_ips = ["192.30.252.0/22", "185.199.108.0/22"]  # Example GitHub IP ranges
