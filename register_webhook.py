@@ -13,9 +13,18 @@ import openai
 app = FastAPI()
 
 # Required env vars
-GITHUB_WEBHOOK_SECRET = os.getenv("GITHUB_WEBHOOK_SECRET")
+GITHUB_WEBHOOK_SECRET = os.path.realpath("GITHUB_WEBHOOK_SECRET")
 GITHUB_APP_ID = os.getenv("GITHUB_APP_ID")
 GITHUB_PRIVATE_KEY_PATH = os.getenv("GITHUB_PRIVATE_KEY_PATH")
+SAFE_ROOT_DIRECTORY = "/path/to/safe/directory"
+
+if GITHUB_PRIVATE_KEY_PATH:
+    normalized_path = os.path.realpath(GITHUB_PRIVATE_KEY_PATH)
+    if not normalized_path.startswith(SAFE_ROOT_DIRECTORY):
+        raise ValueError("Invalid private key path")
+else:
+    raise ValueError("GITHUB_PRIVATE_KEY_PATH is not set")
+
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 openai.api_key = OPENAI_API_KEY
@@ -26,7 +35,7 @@ def verify_signature(request_body: bytes, signature: str):
     return hmac.compare_digest(expected_signature, signature)
 
 def create_jwt():
-    with open(GITHUB_PRIVATE_KEY_PATH, "r") as key_file:
+    with open(normalized_path, "r") as key_file:
         private_key = key_file.read()
     now = int(time.time())
     payload = {
