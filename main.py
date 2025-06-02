@@ -6,6 +6,36 @@ from core.github_auth import get_installation_access_token
 from core.ai_review import generate_ai_review_comment
 import httpx
 import EnclovAIPage from "./components/EnclovAIPage";
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from enclov_commands import allowed_funcs
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Replace in prod
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class CommandRequest(BaseModel):
+    command: str
+
+@app.post("/api/run")
+async def run_command(req: CommandRequest):
+    cmd = req.command.strip()
+    func = allowed_funcs.get(cmd)
+
+    if not func:
+        return {"output": f"❌ Unknown command: '{cmd}'\nType 'enclov help' for help."}
+    
+    try:
+        result = func()
+        return {"output": result}
+    except Exception as e:
+        return {"output": f"🔥 Error while executing '{cmd}': {str(e)}"}
 
 export default function Home() {
   return <EnclovAIPage />;
