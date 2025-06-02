@@ -1,12 +1,18 @@
 import os
-from fastapi import FastAPI, HTTPException
+import logging
+from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 import openai
+from dotenv import load_dotenv
+
+load_dotenv()  # Optional: Only for local dev
 
 app = FastAPI()
+logger = logging.getLogger("uvicorn.error")
 
-# Load your OpenAI API key from environment
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+MODEL_NAME = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+
 if not OPENAI_API_KEY:
     raise RuntimeError("Missing OPENAI_API_KEY environment variable")
 
@@ -34,7 +40,7 @@ Review:
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",
+            model=MODEL_NAME,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=300,
             temperature=0.2,
@@ -42,4 +48,5 @@ Review:
         review_text = response.choices[0].message.content.strip()
         return CodeReviewResponse(review_comment=review_text)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"OpenAI API error: {str(e)}")
+        logger.exception("OpenAI API error")
+        raise HTTPException(status_code=500, detail="OpenAI API error")
