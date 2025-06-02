@@ -50,11 +50,15 @@ async def github_webhook(request: Request, x_hub_signature_256: str = Header(Non
             # Validate comments_url domain (trust but verify)
             comments_url = payload["pull_request"]["comments_url"]
 
-            # Validate comments_url against a whitelist of allowed base URLs
+            # Define a whitelist of allowed base URLs
+            allowed_base_urls = [
+                "https://web4application.github.io/repos/"
+            ]
+
             # Parse and validate the comments_url
             parsed_url = urlparse(comments_url)
-            if parsed_url.scheme != "https" or parsed_url.netloc != "web4application.github.io" or not parsed_url.path.startswith("/repos/"):
-                raise HTTPException(status_code=400, detail="Invalid comments_url: URL does not match expected pattern")
+            if not any(comments_url.startswith(base_url) for base_url in allowed_base_urls):
+                raise HTTPException(status_code=400, detail="Invalid comments_url: URL not in allowed whitelist")
             
             # Resolve domain to IP and validate against trusted range
             try:
