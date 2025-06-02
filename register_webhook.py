@@ -56,6 +56,24 @@ def is_valid_github_url(url: str) -> bool:
     except Exception:
         return False
 
+def resolve_and_validate_ip(url: str) -> str:
+    try:
+        parsed_url = urlparse(url)
+        hostname = parsed_url.hostname
+        if not hostname:
+            raise ValueError("Invalid URL: missing hostname")
+
+        # Resolve hostname to IP address
+        ip_address = httpx.get(f"https://dns.google/resolve?name={hostname}").json()["Answer"][0]["data"]
+
+        # Check if IP address is public
+        if ip_address.startswith(("10.", "172.", "192.", "127.", "169.254.", "::1")):
+            raise ValueError("Resolved IP address is private or internal")
+
+        return ip_address
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid URL: {str(e)}")
+
 async def get_installation_access_token(installation_id: int):
     jwt_token = create_jwt()
     url = f"https://api.github.com/app/installations/{installation_id}/access_tokens"
@@ -124,8 +142,9 @@ async def github_webhook(request: Request, x_hub_signature_256: str = Header(Non
 
             token = await get_installation_access_token(installation_id)
 
+            validated_ip = resolve_and_validate_ip(code_diff_url)
             async with httpx.AsyncClient() as client:
-                diff_resp = await client.get(code_diff_url)
+                diff_resp = await client.get(f"https://{validated_ip}")
                 diff_resp.raise_for_status()
                 diff_text = diff_resp.text
 
