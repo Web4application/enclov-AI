@@ -52,9 +52,19 @@ async def github_webhook(request: Request, x_hub_signature_256: str = Header(Non
 
             # Validate comments_url against a whitelist of allowed base URLs
             allowed_domains = ["web4application.github.io"]
+            allowed_ips = ["192.30.252.153", "192.30.252.154"]  # Example trusted IPs for allowed domains
             parsed_url = urlparse(comments_url)
-            if parsed_url.scheme != "https" or parsed_url.netloc not in allowed_domains:
-                raise HTTPException(status_code=400, detail="Invalid comments_url: not in allowed domains or scheme")
+            if parsed_url.scheme != "https":
+                raise HTTPException(status_code=400, detail="Invalid comments_url: scheme must be https")
+
+            # Resolve the hostname to an IP address
+            try:
+                resolved_ip = httpx.get(f"https://dns.google/resolve?name={parsed_url.netloc}").json()["Answer"][0]["data"]
+            except Exception:
+                raise HTTPException(status_code=400, detail="Invalid comments_url: failed to resolve hostname")
+
+            if resolved_ip not in allowed_ips:
+                raise HTTPException(status_code=400, detail="Invalid comments_url: resolved IP not in allowed list")
 
             headers = {
                 "Authorization": f"token {GITHUB_ACCESS_TOKEN}",
