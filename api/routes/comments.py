@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Header, HTTPException, Request
+from fastapi import APIRouter, Request, Header, HTTPException
+import json
 from core.security import verify_signature
 from core.github_auth import get_installation_access_token
 from core.ai_review import generate_ai_review_comment
-import json, httpx
+import httpx
 
 router = APIRouter()
 
