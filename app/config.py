@@ -55,6 +55,17 @@ async def github_webhook(request: Request, x_hub_signature_256: str = Header(Non
             parsed_url = urlparse(comments_url)
             if parsed_url.scheme != "https" or parsed_url.netloc != "web4application.github.io" or not parsed_url.path.startswith("/repos/"):
                 raise HTTPException(status_code=400, detail="Invalid comments_url: URL does not match expected pattern")
+            
+            # Resolve domain to IP and validate against trusted range
+            try:
+                import socket
+                resolved_ip = socket.gethostbyname(parsed_url.netloc)
+                trusted_ips = ["192.30.252.0/22", "185.199.108.0/22"]  # Example GitHub IP ranges
+                from ipaddress import ip_address, ip_network
+                if not any(ip_address(resolved_ip) in ip_network(trusted_range) for trusted_range in trusted_ips):
+                    raise HTTPException(status_code=400, detail="Invalid comments_url: IP address not in trusted range")
+            except Exception as e:
+                raise HTTPException(status_code=400, detail=f"Invalid comments_url: {str(e)}")
 
             headers = {
                 "Authorization": f"token {GITHUB_ACCESS_TOKEN}",
