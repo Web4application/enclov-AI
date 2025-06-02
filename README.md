@@ -1,3 +1,4 @@
+[![Build and Deploy Enclov CLI Docs](https://github.com/Web4application/enclov-AI/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/Web4application/enclov-AI/actions/workflows/deploy-docs.yml)
 # enclov-AI 🧠🤖
 
 **AI-Powered GitHub Pull Request Reviewer**  
