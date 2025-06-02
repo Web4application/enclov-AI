@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.routes import comments
 from models.schema import CommandRequest
 from enclov_commands import allowed_funcs
+from app.routes import submit_pr  # adjust path as needed
 
 app = FastAPI(
     title="Enclov-AI",
@@ -16,6 +17,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(submit_pr.router)
 
 # CLI command endpoint
 @app.post("/api/run")
