@@ -51,9 +51,10 @@ async def github_webhook(request: Request, x_hub_signature_256: str = Header(Non
             comments_url = payload["pull_request"]["comments_url"]
 
             # Validate comments_url against a whitelist of allowed base URLs
-            allowed_base_urls = ["https://web4application.github.io/enclov-AI/"]
-            if not any(comments_url.startswith(base_url) for base_url in allowed_base_urls):
-                raise HTTPException(status_code=400, detail="Invalid comments_url: not in allowed base URLs")
+            allowed_domains = ["web4application.github.io"]
+            parsed_url = urlparse(comments_url)
+            if parsed_url.scheme != "https" or parsed_url.netloc not in allowed_domains:
+                raise HTTPException(status_code=400, detail="Invalid comments_url: not in allowed domains or scheme")
 
             headers = {
                 "Authorization": f"token {GITHUB_ACCESS_TOKEN}",
