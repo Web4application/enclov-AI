@@ -74,6 +74,15 @@
     }
 
     function executeCommand(cmd) {
+  printOutput(`$ ${cmd}`);
+  fetch("http://localhost:8000/api/run", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ command: cmd })
+  })
+  .then(res => res.json())
+  .then(data => printOutput(data.output))
+  .catch(err => printOutput(`⚠️ Error: ${err.message}`));
       printOutput(`$ ${cmd}`);
       switch(cmd.trim()) {
         case 'enclov version':
