@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+  packages: write
+  deployments: write
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
@@ -24,7 +29,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: /web4application.github.io/enclov-AI:latest
+          tags: web4application.github.io/enclov-AI:latest
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
