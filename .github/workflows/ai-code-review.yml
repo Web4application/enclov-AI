@@ -7,10 +7,13 @@ on:
 jobs:
   ai_review:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: AI Code Reviewer
-        uses: web4application/ai-code-reviewer@main
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run AI Code Reviewer
+        uses: ./ai-code-reviewer
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
