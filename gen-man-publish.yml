@@ -26,7 +26,7 @@ jobs:
           pip install qrcode[pil]
 
       - name: Generate man pages HTML and TOC
-        run: python .github/scripts/generate_man.py
+        run: python scripts/generate_man.py
 
       - name: Commit and push docs
         run: |
