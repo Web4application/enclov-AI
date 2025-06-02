@@ -19,3 +19,10 @@ for file in $(git diff --name-only "$WORKFLOW_DIR"); do
 done
 
 echo "✅ Patch files generated in $PATCH_DIR/"
+
+# Inside the loop:
+if git diff "$file" | grep -q .; then
+  git diff "$file" > "$patch_name"
+else
+  echo "⚠️  No diff for $file – skipping"
+fi
