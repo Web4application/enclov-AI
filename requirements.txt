@@ -1,6 +1,7 @@
 requests
 pyjwt
 celery[redis]
+httpx==0.28.1
 openai
 fastapi==0.95.1
 uvicorn[standard]==0.22.0
