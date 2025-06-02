@@ -1,134 +1,39 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Enclov Web CLI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      background: #121212;
-      color: #eee;
-      font-family: 'Fira Mono', monospace;
-      padding: 2rem;
-    }
-    h1 {
-      color: #fff;
-    }
-    .terminal {
-      background: #1e1e1e;
-      border-radius: 6px;
-      padding: 1rem;
-      overflow-y: auto;
-      max-height: 60vh;
-      margin-bottom: 1rem;
-      white-space: pre-wrap;
-    }
-    .input-line {
-      display: flex;
-      align-items: center;
-    }
-    .prompt {
-      color: #0f0;
-      margin-right: 0.5rem;
-    }
-    input[type="text"] {
-      background: transparent;
-      border: none;
-      color: #79b8ff;
-      width: 100%;
-      font-family: 'Fira Mono', monospace;
-      font-size: 1rem;
-      outline: none;
-    }
-    footer {
-      margin-top: 4rem;
-      border-top: 1px solid #444;
-      padding-top: 1rem;
-      color: #888;
-      font-size: 0.9rem;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Enclov CLI Manual - Table of Contents</title>
+<style>
+  body {
+    background: #121212;
+    color: #eee;
+    font-family: 'Fira Mono', monospace;
+    padding: 2rem;
+  }
+  a {
+    color: #79b8ff;
+    text-decoration: none;
+    font-size: 1.2rem;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  li {
+    margin-bottom: 1rem;
+  }
+</style>
 </head>
 <body>
-  <h1>🧪 Enclov Web CLI</h1>
-
-  <div class="terminal" id="terminal"></div>
-  <div class="input-line">
-    <span class="prompt">$</span>
-    <input id="cliInput" type="text" autocomplete="off" autofocus />
-  </div>
-
-  <footer>
-    <p>Type <code>enclov help</code> to get started. | <a href="https://github.com/Web4application/enclov" target="_blank">GitHub</a></p>
-  </footer>
-
-  <script>
-    const terminal = document.getElementById('terminal');
-    const input = document.getElementById('cliInput');
-    const history = [];
-    let historyIndex = -1;
-
-    function printOutput(text) {
-      terminal.innerHTML += text + '\n';
-      terminal.scrollTop = terminal.scrollHeight;
-    }
-
-    function executeCommand(cmd) {
-  printOutput(`$ ${cmd}`);
-  fetch("http://localhost:8000/api/run", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ command: cmd })
-  })
-  .then(res => res.json())
-  .then(data => printOutput(data.output))
-  .catch(err => printOutput(`⚠️ Error: ${err.message}`));
-      printOutput(`$ ${cmd}`);
-      switch(cmd.trim()) {
-        case 'enclov version':
-          printOutput('Enclov CLI v1.0.2');
-          break;
-        case 'enclov config':
-          printOutput(JSON.stringify({ env: "production", autosync: true }, null, 2));
-          break;
-        case 'enclov start':
-          printOutput('🚀 Booting up the Enclov Engine...\n✅ Status: Ready');
-          break;
-        case 'enclov help':
-          printOutput(`Available Commands:
-  - enclov version   Show current version
-  - enclov config    Show current configuration
-  - enclov start     Start the Enclov system
-  - enclov help      Show this help message`);
-          break;
-        case '':
-          break;
-        default:
-          printOutput(`❌ Unknown command: "${cmd}"\nType 'enclov help' to see available commands.`);
-      }
-    }
-
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        const cmd = input.value;
-        history.push(cmd);
-        historyIndex = history.length;
-        executeCommand(cmd);
-        input.value = '';
-      } else if (e.key === 'ArrowUp') {
-        if (historyIndex > 0) {
-          historyIndex--;
-          input.value = history[historyIndex];
-        }
-      } else if (e.key === 'ArrowDown') {
-        if (historyIndex < history.length - 1) {
-          historyIndex++;
-          input.value = history[historyIndex];
-        } else {
-          input.value = '';
-        }
-      }
-    });
-  </script>
+  <h1>Enclov CLI Manual</h1>
+  <ul>
+    <li><a href="enclov-start.html">enclov start command</a></li>
+<li><a href="enclov-config.html">enclov config command</a></li>
+<li><a href="enclov-version.html">enclov version command</a></li>
+  </ul>
 </body>
 </html>
