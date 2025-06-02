@@ -1,16 +1,41 @@
-name: AI Code Review
+name: "AI Code Reviewer"
+description: "Uses OpenAI to analyze pull request diffs and comment"
+author: "web4application"
+inputs:
+  GITHUB_TOKEN:
+    description: "GitHub token to authenticate and post comments"
+    required: true
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        echo "🚀 Starting AI Review..."
 
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+        PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+        DIFF_URL=$(jq --raw-output .pull_request.diff_url "$GITHUB_EVENT_PATH")
+        COMMENTS_URL=$(jq --raw-output .pull_request.comments_url "$GITHUB_EVENT_PATH")
 
-jobs:
-  ai_review:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: AI Code Reviewer
-        uses: web4application/ai-code-reviewer@main
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        echo "📄 Fetching diff for PR #$PR_NUMBER"
+        curl -sL "$DIFF_URL" -H "Accept: application/vnd.github.v3.diff" > pr.diff
+
+        echo "🧠 Sending diff to your FastAPI AI reviewer"
+        REVIEW=$(curl -s -X POST https://YOUR-BACKEND-URL.com/webhook \
+          -H "x-github-event: pull_request" \
+          -H "x-hub-signature-256: fake" \
+          -H "Content-Type: application/json" \
+          -d @${GITHUB_EVENT_PATH})
+
+        echo "💬 Review response: $REVIEW"
+
+        COMMENT=$(echo "$REVIEW" | jq -r .review)
+
+        echo "📣 Posting comment to GitHub"
+        curl -s -X POST "$COMMENTS_URL" \
+          -H "Authorization: Bearer ${{ inputs.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -d "{\"body\": \"$COMMENT\"}"
+
+      shell: bash
