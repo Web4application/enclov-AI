@@ -51,9 +51,10 @@ async def github_webhook(request: Request, x_hub_signature_256: str = Header(Non
             comments_url = payload["pull_request"]["comments_url"]
 
             # Validate comments_url against a whitelist of allowed base URLs
-            allowed_base_urls = ["web4application.github.io/comments"]
-            if comments_url not in allowed_base_urls:
-                raise HTTPException(status_code=400, detail="Invalid comments_url: URL not in allowed list")
+            # Parse and validate the comments_url
+            parsed_url = urlparse(comments_url)
+            if parsed_url.scheme != "https" or parsed_url.netloc != "web4application.github.io" or not parsed_url.path.startswith("/repos/"):
+                raise HTTPException(status_code=400, detail="Invalid comments_url: URL does not match expected pattern")
 
             headers = {
                 "Authorization": f"token {GITHUB_ACCESS_TOKEN}",
