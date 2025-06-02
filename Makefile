@@ -12,3 +12,6 @@ commit-patch:
 
 push:
 	git push origin main
+
+generate-patches:
+	./generate_patches.sh
