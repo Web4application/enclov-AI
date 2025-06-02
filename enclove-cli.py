@@ -39,6 +39,17 @@ def cmd_update(args):
         print("Force updating Enclov AI...")
     else:
         print("Updating Enclov AI...")
+        def enclov_version():
+    return "Enclov CLI v1.0.2"
+
+def enclov_start():
+    return "Engine started 🚀"
+
+allowed_funcs = {
+    "enclov version": enclov_version,
+    "enclov start": enclov_start,
+    # Add more commands here
+}
 
 def main():
     parser = argparse.ArgumentParser(prog="enclov", description="Privacy-first AI assistant CLI")
