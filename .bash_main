@@ -11,3 +11,15 @@ cd enclov-AI
 mkdir frontend
 cd frontend
 npx create-next-app@latest .
+
+cat << 'EOF' | git apply
+diff --git a/.github/workflows/gen-man.yml b/.github/workflows/gen-man.yml
+--- a/.github/workflows/gen-man.yml
++++ b/.github/workflows/gen-man.yml
+@@ -2,2 +2,5 @@
+ 
++permissions:
++  contents: read
++
+ on:
+EOF
