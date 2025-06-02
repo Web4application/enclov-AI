@@ -1,0 +1,12 @@
+name: "AI Code Reviewer"
+description: "Reviews PR diffs using OpenAI GPT and posts feedback"
+inputs:
+  GITHUB_TOKEN:
+    required: true
+    description: "GitHub token for posting comments"
+  OPENAI_API_KEY:
+    required: true
+    description: "OpenAI API key"
+runs:
+  using: "docker"
+  image: "Dockerfile"
