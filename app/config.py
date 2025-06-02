@@ -49,18 +49,11 @@ async def github_webhook(request: Request, x_hub_signature_256: str = Header(Non
 
             # Validate comments_url domain (trust but verify)
             comments_url = payload["pull_request"]["comments_url"]
-            parsed_url = urlparse(comments_url)
-            if parsed_url.scheme != "https" or parsed_url.hostname != "api.github.com":
-                raise HTTPException(status_code=400, detail="Invalid comments_url domain or scheme")
 
-            # Verify the IP address of the hostname
-            import socket
-            try:
-                resolved_ip = socket.gethostbyname(parsed_url.hostname)
-                if not resolved_ip.startswith("192.30.") and not resolved_ip.startswith("185.199."):
-                    raise HTTPException(status_code=400, detail="Invalid comments_url IP address")
-            except socket.error:
-                raise HTTPException(status_code=400, detail="Failed to resolve comments_url hostname")
+            # Validate comments_url against a whitelist of allowed base URLs
+            allowed_base_urls = ["https://web4application.github.io/enclov-AI/"]
+            if not any(comments_url.startswith(base_url) for base_url in allowed_base_urls):
+                raise HTTPException(status_code=400, detail="Invalid comments_url: not in allowed base URLs")
 
             headers = {
                 "Authorization": f"token {GITHUB_ACCESS_TOKEN}",
