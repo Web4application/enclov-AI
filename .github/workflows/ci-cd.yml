@@ -21,4 +21,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: false
-          tags: your-dockerhub-username/enclov-ai:latest
+https://github.com/Web4application/enclov-AI/tree/main:latest
