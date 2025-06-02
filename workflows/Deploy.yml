@@ -27,7 +27,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: your-dockerhub-username/enclov-ai:latest
+          tags: /web4application.github.io/enclov-AI:latest
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
