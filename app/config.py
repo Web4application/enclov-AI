@@ -2,12 +2,15 @@ from fastapi import FastAPI, Request, Header, HTTPException
 import hmac
 import hashlib
 import os
+from urllib.parse import urlparse
 import httpx
+import openai
 
 app = FastAPI()
 
 GITHUB_SECRET = os.getenv("GITHUB_WEBHOOK_SECRET")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GITHUB_ACCESS_TOKEN = os.getenv("GITHUB_ACCESS_TOKEN")
 
 def verify_signature(payload_body: bytes, signature_header: str):
     if not signature_header:
@@ -22,7 +25,7 @@ def verify_signature(payload_body: bytes, signature_header: str):
 async def github_webhook(request: Request, x_hub_signature_256: str = Header(None), x_github_event: str = Header(None)):
     body = await request.body()
 
-    # Verify webhook signature
+    # Security first: Verify webhook signature
     if not verify_signature(body, x_hub_signature_256):
         raise HTTPException(status_code=400, detail="Invalid signature")
 
@@ -36,31 +39,33 @@ async def github_webhook(request: Request, x_hub_signature_256: str = Header(Non
             repo_full_name = payload["repository"]["full_name"]
             diff_url = payload["pull_request"]["diff_url"]
 
-            # Fetch PR diff
+            # Grab the PR diff text
             async with httpx.AsyncClient() as client:
                 diff_response = await client.get(diff_url, headers={"Accept": "application/vnd.github.v3.diff"})
                 diff_text = diff_response.text
 
-            # Call your AI review function here (mock example)
+            # Get AI review
             review_comment = await generate_ai_review(diff_text)
 
-            # Post review comment to GitHub
+            # Validate comments_url domain (trust but verify)
             comments_url = payload["pull_request"]["comments_url"]
+            parsed_url = urlparse(comments_url)
+            if parsed_url.hostname != "api.github.com":
+                raise HTTPException(status_code=400, detail="Invalid comments_url domain")
+
             headers = {
-                "Authorization": f"token {os.getenv('GITHUB_ACCESS_TOKEN')}",
+                "Authorization": f"token {GITHUB_ACCESS_TOKEN}",
                 "Accept": "application/vnd.github.v3+json"
             }
             data = {"body": review_comment}
 
+            # Post comment on PR
             async with httpx.AsyncClient() as client:
                 await client.post(comments_url, json=data, headers=headers)
 
     return {"status": "ok"}
 
 async def generate_ai_review(diff_text: str) -> str:
-    # Placeholder for real AI call - integrate OpenAI or your model here
-    # Example with OpenAI Chat Completion API:
-    import openai
     openai.api_key = OPENAI_API_KEY
 
     prompt = f"Review this GitHub pull request diff and provide detailed feedback:\n{diff_text}"
