@@ -1,10 +1,13 @@
 import hmac
 import hashlib
-import os
 
-GITHUB_WEBHOOK_SECRET = os.getenv("GITHUB_WEBHOOK_SECRET", "")
+GITHUB_SECRET = b'your_github_webhook_secret_here'
 
-def verify_signature(request_body: bytes, signature: str) -> bool:
-    mac = hmac.new(GITHUB_WEBHOOK_SECRET.encode(), msg=request_body, digestmod=hashlib.sha256)
-    expected_signature = "sha256=" + mac.hexdigest()
-    return hmac.compare_digest(expected_signature, signature)
+def verify_signature(body: bytes, signature: str) -> bool:
+    if not signature:
+        return False
+    sha_name, signature = signature.split('=')
+    if sha_name != 'sha256':
+        return False
+    mac = hmac.new(GITHUB_SECRET, msg=body, digestmod=hashlib.sha256)
+    return hmac.compare_digest(mac.hexdigest(), signature)
