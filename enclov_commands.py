@@ -27,3 +27,7 @@ allowed_funcs = {
     "enclov config": enclov_config,
     "enclov help": enclov_help,
 }
+def enclov_status():
+    return "📊 All systems nominal."
+
+allowed_funcs["enclov status"] = enclov_status
