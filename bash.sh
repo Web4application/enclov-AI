@@ -13,7 +13,7 @@ FRONTEND_PATH="./index.html"
 BACKEND_PATH="./app"
 VERCEL_PROJECT_NAME="enclov-ai-frontend"
 
-echo "🚀 Deploying $APP_NAME..."
+echo "🚀 Deploying $enclovAI..."
 
 # Step 1: Pull latest
 if [ ! -d "$APP_NAME" ]; then
