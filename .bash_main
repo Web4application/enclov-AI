@@ -6,6 +6,7 @@ celery -A enclov_ai_backend.celery_app worker --loglevel=info
 pip install fastapi uvicorn celery redis pydantic mlflow optuna shap
 pip install -r requirements.txt
 base64 -w 0 kubeconfig.yaml
+docker run --net=host -it -e NGROK_AUTHTOKEN=2y96VwzmhS1YV6vgll2Ua411oGc_755Qcpps22pznftiuGZWr ngrok/ngrok:latest http --url=above-feasible-lobster.ngrok-free.app 80
 
 cd enclov-AI
 mkdir frontend
