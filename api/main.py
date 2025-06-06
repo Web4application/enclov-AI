@@ -1,10 +1,5 @@
 from fastapi import FastAPI
-from api.views import router as ai_router
+from api.routes.chat import router as chat_router
 
-app = FastAPI(
-    title="AI Code Reviewer",
-    description="An OpenAI-powered GitHub reviewer, triager, and auto-labeler.",
-    version="1.0.0"
-)
-
-app.include_router(ai_router, prefix="/api")
+app = FastAPI()
+app.include_router(chat_router)
