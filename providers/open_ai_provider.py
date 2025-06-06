@@ -1,7 +1,7 @@
 import openai
 from config import settings
 
-openai.api_key = settings.OPENAI_API_KEY
+openai.api_key = settings.gG1uZhj50x1lYFKrrB5kT3BlbkFJXP3R63ExWT9lkcHI0pRq
 
 def call_openai(prompt, temperature=0.7, max_tokens=2048):
     response = openai.ChatCompletion.create(
