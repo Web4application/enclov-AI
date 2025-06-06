@@ -1,16 +1,22 @@
 version: "3.9"
-
 services:
-  enclov-ai:
+  backend:
     build: .
     ports:
-      - "80:80"      # Nginx serving React frontend on 80
-      - "8000:8000"  # FastAPI backend accessible on 8000 (optional)
-    environment:
-      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
+      - "8000:8000"
     volumes:
-      - ./backend:/app/backend  # Optional for live backend dev
-      - ./frontend:/app/frontend # Optional for live frontend dev
-    command: /start.sh
+      - .:/app
+    environment:
+      - MODEL_PROVIDER=openai
+      - OPENAI_API_KEY=${Sk-gG1uZhj50x1lYFKrrB5kT3BlbkFJXP3R63ExWT9lkcHI0pRq
+}
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    command: ["npm", "run", "dev"]
+    volumes:
+      - ./frontend:/app
+    working_dir: /app
