@@ -1,5 +1,13 @@
 import os
 
+class Settings:
+    OPENAI_API_KEY = os.getenv("Sk-gG1uZhj50x1lYFKrrB5kT3BlbkFJXP3R63ExWT9lkcHI0pRq")
+    GOOGLE_API_KEY = os.getenv("AlzaSyCHjfdo3w160Dd5yTVJD409pWmigOJEg")
+    PROVIDER = os.getenv("PROVIDER", "enclovai")  # "openai", "google", or "enclovai"
+
+settings = Settings()
+
+
 MODEL_CONFIG = {
     "default_model": os.getenv("AI_MODEL", "openai/gpt-4.1"),
     "models": {
