@@ -6,6 +6,17 @@ from enclov_commands import allowed_funcs
 from app.routes import submit_pr  # adjust path as needed
 from fastapi import FastAPI
 from submit_pr import router as submit_pr_router
+from providers.enclovai_provider import call_enclovai
+
+def process_prompt(prompt, model="auto"):
+    return call_enclovai(prompt, model=model)
+
+if __name__ == "__main__":
+    prompt = input("Enter your prompt: ")
+    provider = input("Choose provider (openai/google/auto): ").strip().lower()
+    response = process_prompt(prompt, model=provider)
+    print("\n=== Response ===\n")
+    print(response)
 
 app = FastAPI(
     title="Enclov-AI",
