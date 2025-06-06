@@ -1,4 +1,3 @@
-fastapi==0.95.2
 uvicorn[standard]==0.22.0
 httpx==0.28.1
 python-dotenv==1.0.0
@@ -11,3 +10,8 @@ kubernetes
 redis
 pyjwt
 cryptography
+fastapi
+uvicorn
+celery
+redis
+pydantic
