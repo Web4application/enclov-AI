@@ -23,4 +23,6 @@ async def submit_review(pr: PRRequest):
         result = analyze_pr(pr.repo_url, pr.pr_number)
         return JSONResponse(content={"success": True, "comments": result})
     except Exception as e:
-        return JSONResponse(content={"success": False, "error": str(e)})
+        import logging
+        logging.error("An error occurred while processing the request", exc_info=True)
+        return JSONResponse(content={"success": False, "error": "An internal error has occurred."})
