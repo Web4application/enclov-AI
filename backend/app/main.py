@@ -38,6 +38,15 @@ async def predict(request: PredictRequest):
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+# in FastAPI backend
+@app.post("/api/submit")
+async def submit_pr(payload: dict):
+    repo_url = payload.get("repo_url")
+    pr_number = payload.get("pr_number")
+    # enqueue task to Celery
+    task = review_pr.delay(repo_url, pr_number)
+    return {"success": True, "task_id": task.id}
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
