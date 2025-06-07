@@ -75,3 +75,5 @@ aiohttp==3.8.4
 google-cloud-speech==2.22.2
 fastapi==0.95.0
 uvicorn==0.22.0
+httpx
+openai  # or llama-cpp-python, or use LangChain
