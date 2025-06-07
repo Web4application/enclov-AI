@@ -1,22 +1,65 @@
-FROM python:3.11-slim
+# Use Ubuntu base
+FROM ubuntu:22.04
 
+# Set non-interactive mode for apt
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install build tools, Python, Ruby
+RUN apt-get update && apt-get install -y \
+    python3 python3-pip \
+    ruby-full \
+    build-essential \
+    g++ \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Ruby bundler
+RUN gem install bundler
+
+# Create working dir
 WORKDIR /app
 
-COPY api /app/api
-COPY scripts /app/scripts
-COPY model_config.yaml /app/model_config.yaml
-COPY requirements.txt /app/requirements.txt
+# Copy files
+COPY . .
 
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Python deps
+RUN pip3 install -r requirements.txt
 
-RUN apt-get update && apt-get install -y --no-install-recommends gcc libpq-dev && rm -rf /var/lib/apt/lists/*
+# Install Ruby deps (if Gemfile exists)
+RUN bundle install || true
 
-COPY requirements.txt .
+# Build C++ (optional)
+RUN g++ -Wall -std=c++17 -o app main.cpp || true
 
-RUN pip install --no-cache-dir -r requirements.txt
+# Entry point prints help
+CMD ["make", "help"]
 
-COPY ./app ./app
+# Base Python stage
+FROM python:3.11-slim as python-build
+WORKDIR /app/python
+COPY python/requirements.txt .
+RUN pip install -r requirements.txt
+COPY python/ .
 
-EXPOSE 8000
+# Base C++ stage
+FROM gcc:12 as cpp-build
+WORKDIR /app/cpp
+COPY cpp/ .
+RUN make
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+# Base Ruby stage
+FROM ruby:3.2 as ruby-build
+WORKDIR /app/ruby
+COPY ruby/ .
+RUN bundle install
+
+# Final image combining all
+FROM debian:bookworm-slim
+WORKDIR /app
+
+COPY --from=python-build /app/python /app/python
+COPY --from=cpp-build /app/cpp/bin /app/cpp/bin
+COPY --from=ruby-build /app/ruby /app/ruby
+
+CMD ["bash"]
