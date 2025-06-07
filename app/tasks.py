@@ -1,8 +1,36 @@
 from celery import Celery
+from typing import List
+from celery import shared_task
+from .utils.github_client import fetch_pull_request_diff
+from .utils.llm_client import analyze_code_with_llm
+from .models import save_review_comments
 import httpx
 import os
 import difflib
-from typing import List
+
+@shared_task
+def analyze_pull_request(repo_url: str, pr_number: int):
+    try:
+        # 1. Fetch PR diff
+        diff_text = fetch_pull_request_diff(repo_url, pr_number)
+        if not diff_text:
+            return {"success": False, "error": "Unable to fetch diff"}
+
+        # 2. Use LLM to analyze PR diff
+        review_comments = analyze_code_with_llm(diff_text)
+
+        # 3. Persist and/or post comments
+        save_review_comments(repo_url, pr_number, review_comments)
+
+        return {
+            "success": True,
+            "comments": review_comments,
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+        }
 
 celery_app = Celery(
     'tasks',

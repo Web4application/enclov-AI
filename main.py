@@ -8,6 +8,14 @@ from fastapi import FastAPI
 from submit_pr import router as submit_pr_router
 from providers.enclovai_provider import call_enclovai
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # or specific origin
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 def process_prompt(prompt, model="auto"):
     return call_enclovai(prompt, model=model)
 
