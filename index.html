@@ -3,256 +3,181 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>enclov-AI — GitHub PR Code Reviewer</title>
+  <title>enclovAI — GitHub PR Code Reviewer</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background: #0d0d0d;
-      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0f0f0f;
+      color: #f0f0f0;
       margin: 0;
       padding: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
     }
 
     header {
-      background: #1a1a1a;
-      padding: 1rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      background-color: #1f1f1f;
+      padding: 2rem;
+      text-align: center;
       border-bottom: 1px solid #333;
     }
 
-    .logo {
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: #4caf50;
-      text-shadow: 0 0 4px #4caf50aa;
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: #00ffff;
     }
 
-    nav a {
+    header p {
+      margin-top: 0.5rem;
+      font-size: 1.2rem;
       color: #ccc;
-      margin-left: 1.2rem;
-      text-decoration: none;
-      font-size: 1rem;
-      transition: 0.3s ease;
-    }
-
-    nav a:hover {
-      color: #4caf50;
     }
 
     main {
       padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      max-width: 800px;
+      margin: auto;
     }
 
-    h1 {
-      color: #4caf50;
-      font-size: 3rem;
-      margin-bottom: 0.5em;
-      text-shadow: 0 0 6px #4caf50cc;
-    }
-
-    .lead {
-      font-size: 1.3rem;
-      max-width: 600px;
-      text-align: center;
-      color: #bdbdbd;
-    }
-
-    .button {
-      margin-top: 2rem;
-      background: #4caf50;
-      color: white;
-      padding: 0.8em 1.6em;
-      border: none;
-      border-radius: 5px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.3s ease;
-      text-decoration: none;
-    }
-
-    .button:hover {
-      background: #43a047;
-    }
-
-    .progress-container {
-      margin-top: 3rem;
-      width: 100%;
-      max-width: 600px;
-      background: #1e1e1e;
-      border-radius: 6px;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      height: 20px;
-      background: #4caf50;
-      width: 0%;
-      transition: width 0.4s ease;
-    }
-
-    .comments-box {
-      margin-top: 3rem;
-      background: #1a1a1a;
-      border-left: 4px solid #4caf50;
-      padding: 1rem;
-      max-width: 600px;
-      border-radius: 6px;
-      font-size: 0.95rem;
-    }
-
-    .form-section {
-      margin-top: 3rem;
-      background: #1a1a1a;
+    form {
+      margin-bottom: 2rem;
+      background-color: #1a1a1a;
       padding: 1.5rem;
-      max-width: 600px;
-      width: 100%;
-      border-radius: 6px;
-      border: 1px solid #333;
+      border-radius: 8px;
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.1);
     }
 
-    .form-section label {
+    label {
       display: block;
       margin-bottom: 0.5rem;
       font-weight: bold;
     }
 
-    .form-section input,
-    .form-section textarea {
+    input[type="text"],
+    input[type="number"] {
       width: 100%;
       padding: 0.75rem;
       margin-bottom: 1rem;
+      border: 1px solid #333;
       border-radius: 4px;
-      border: none;
-      background: #2a2a2a;
-      color: #e0e0e0;
+      background-color: #2a2a2a;
+      color: #f0f0f0;
     }
 
-    .form-section button {
-      background: #4caf50;
-      color: white;
-      padding: 0.7rem 1.4rem;
+    button {
+      padding: 0.75rem 1.5rem;
       border: none;
       border-radius: 4px;
-      font-size: 1rem;
+      background-color: #00ffff;
+      color: #000;
+      font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s ease;
     }
 
-    .form-section button:hover {
-      background: #43a047;
+    button:hover {
+      background-color: #00cccc;
     }
 
-    .footer {
-      margin-top: auto;
-      font-size: 0.8rem;
-      color: #666;
+    #commentBox {
+      margin-top: 2rem;
+      background-color: #141414;
+      padding: 1rem;
+      border-radius: 6px;
+      min-height: 100px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      color: #b0f0ff;
+      border-left: 4px solid #00ffff;
+    }
+
+    .progress-container {
+      background-color: #2f2f2f;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 1rem;
+      height: 20px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: #00ffff;
+      transition: width 0.3s ease-in-out;
+    }
+
+    footer {
       text-align: center;
       padding: 2rem;
-    }
-
-    .projects {
-      margin-top: 4rem;
-      max-width: 800px;
-      text-align: left;
-    }
-
-    .projects h2 {
-      color: #4caf50;
-      margin-bottom: 1rem;
-    }
-
-    .projects ul {
-      padding-left: 1.2rem;
-    }
-
-    .projects li {
-      margin-bottom: 1rem;
-    }
-
-    .projects a {
-      color: #81d4fa;
+      font-size: 0.9rem;
+      color: #777;
     }
   </style>
 </head>
 <body>
-
   <header>
-    <div class="logo">QUBUHUB</div>
-    <nav>
-      <a href="#about">About</a>
-      <a href="#projects">Projects</a>
-      <a href="https://web4application.github.io/kubu-hai" target="_blank">Kubu-Hai</a>
-      <a href="https://github.com/Web4application/enclov-AI" target="_blank">GitHub</a>
-    </nav>
+    <h1>enclovAI</h1>
+    <p>AI-Powered GitHub PR Code Reviewer</p>
   </header>
 
   <main>
-    <h1>enclov-AI</h1>
-    <p class="lead">
-      Supercharge your GitHub PR workflow with real-time AI-driven review automation. 
-      Powered by OpenAI, FastAPI, Redis, and Celery.
-    </p>
+    <form id="prForm">
+      <label for="repoUrl">Repository URL</label>
+      <input type="text" id="repoUrl" name="repoUrl" placeholder="https://github.com/user/repo" required />
 
-    <a class="button" href="https://github.com/Web4application/enclov-AI" target="_blank">View on GitHub</a>
+      <label for="prNumber">Pull Request Number</label>
+      <input type="number" id="prNumber" name="prNumber" placeholder="42" required />
+
+      <button type="submit">Submit for AI Review</button>
+    </form>
 
     <div class="progress-container">
       <div class="progress-bar" id="progressBar"></div>
     </div>
 
-    <div class="comments-box" id="commentBox">
-      🔄 Waiting for review...
-    </div>
-
-    <div class="form-section">
-      <h2>📝 Submit GitHub PR for Review</h2>
-      <form id="prForm">
-        <label for="repoUrl">GitHub Repository URL</label>
-        <input type="url" id="repoUrl" name="repoUrl" required placeholder="https://github.com/user/repo" />
-
-        <label for="prNumber">Pull Request Number</label>
-        <input type="number" id="prNumber" name="prNumber" required placeholder="e.g. 42" />
-
-        <button type="submit">Submit for AI Review</button>
-      </form>
-    </div>
-
-    <div class="projects" id="projects">
-      <h2>🔍 About QUBUHUB</h2>
-      <p>
-        <strong>QUBUHUB</strong> is the heartbeat of next-gen open innovation. From soulful companions like <em>Lola</em> to decentralized infrastructure with <em>Fadaka</em>, we've been crafting the future, one stack at a time. Built by dreamers, hackers, and pragmatists.
-      </p>
-
-      <h2>🚀 Projects from QUBUHUB</h2>
-      <ul>
-        <li><strong>Lola</strong>: Emotionally intelligent AI companion. <a href="https://github.com/Web4application/Lola.git" target="_blank">GitHub</a></li>
-        <li><strong>RODAAI</strong>: Open-source AI + data science orchestration. <a href="https://github.com/Web4application/Web4AI_Project_Assistant.git" target="_blank">GitHub</a></li>
-        <li><strong>Fadaka Blockchain</strong>: Secure and extensible blockchain network. <a href="https://github.com/Web4application/fadaka.git" target="_blank">GitHub</a></li>
-        <li><strong>AgbakoAI</strong>: Adaptable modular AI for real-world industries. <a href="https://github.com/Web4application/agbakoAI" target="_blank">GitHub</a></li>
-        <li><strong>Swiftbot</strong>: Fast orchestration bot for modern workflows. <a href="https://github.com/Web4application/swiftbot.git" target="_blank">GitHub</a></li>
-        <li><strong>Kubu-Hai</strong>: Full-stack generator with FastAPI + Dart. <a href="https://github.com/Web4application/kubu-hai" target="_blank">GitHub</a></li>
-        <li><strong>Enclov-AI</strong>: The AI code reviewer you're reading right now. <a href="https://github.com/Web4application/enclov-AI" target="_blank">GitHub</a></li>
-      </ul>
+    <div id="commentBox">
+      🧠 AI review feedback will appear here...
     </div>
   </main>
 
-  <div class="footer">
-    &copy; 2025 QUBUHUB. Built by Kubu Lee with containers, code, and conviction.
-  </div>
+  <footer>
+    © 2025 enclovAI — Built with ❤️ for developers
+  </footer>
 
   <script>
-    let progress = 0;
-    const bar = document.getElementById('progressBar');
+    const progressBar = document.getElementById('progressBar');
     const commentBox = document.getElementById('commentBox');
+    const prForm = document.getElementById('prForm');
 
-    function simulateJobProgress() {
+    prForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const repoUrl = document.getElementById('repoUrl').value;
+      const prNumber = document.getElementById('prNumber').value;
+
+      commentBox.innerHTML = '⏳ Submitting PR for AI review...';
+      progressBar.style.width = '0%';
+
+      try {
+        const response = await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ repo_url: repoUrl, pr_number: prNumber })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          commentBox.innerHTML = '🚀 Review submitted successfully. Processing...';
+          simulateProgress();
+        } else {
+          commentBox.innerHTML = `❌ Submission failed: ${result.error}`;
+        }
+      } catch (error) {
+        console.error(error);
+        commentBox.innerHTML = '❌ Error submitting PR.';
+      }
+    });
+
+    function simulateProgress() {
+      let progress = 0;
       const interval = setInterval(() => {
         if (progress >= 100) {
           clearInterval(interval);
@@ -266,36 +191,10 @@
           return;
         }
         progress += Math.random() * 10;
-        bar.style.width = Math.min(progress, 100) + "%";
+        progressBar.style.width = Math.min(progress, 100) + '%';
         commentBox.innerHTML = `<strong>AI Review Comments:</strong><br><br><em>Analyzing diffs... (${Math.floor(progress)}%)</em>`;
       }, 600);
     }
-
-    simulateJobProgress();
-
-    document.getElementById("prForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const repoUrl = document.getElementById("repoUrl").value;
-      const prNumber = document.getElementById("prNumber").value;
-      commentBox.innerHTML = "⏳ Submitting PR for review...";
-      try {
-        const res = await fetch("/api/submit", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ repo_url: repoUrl, pr_number: prNumber })
-        });
-        const data = await res.json();
-        if (data.success) {
-          commentBox.innerHTML = "🚀 Review submitted successfully. Reviewing in progress...";
-          simulateJobProgress();
-        } else {
-          commentBox.innerHTML = "❌ Submission failed: " + data.error;
-        }
-      } catch (err) {
-        console.error(err);
-        commentBox.innerHTML = "❌ Error submitting PR.";
-      }
-    });
   </script>
 </body>
 </html>
