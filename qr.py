@@ -2,7 +2,7 @@ import qrcode
 import io
 
 def print_qr(command="start"):
-    url = f"https://web4application.github.io/enclov-AI/enclov-{command}.html"
+    url = f"https://web4application.github.io/enclovAI/enclov-{command}.html"
     qr = qrcode.QRCode(box_size=1, border=1)
     qr.add_data(url)
     qr.make(fit=True)
