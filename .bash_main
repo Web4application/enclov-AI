@@ -10,7 +10,7 @@ docker run --net=host -it -e NGROK_AUTHTOKEN=2y96VwzmhS1YV6vgll2Ua411oGc_755Qcpp
 docker run --net=host -it -e NGROK_AUTHTOKEN=2y96VwzmhS1YV6vgll2Ua411oGc_755Qcpps22pznftiuGZWr ngrok/ngrok:latest http 80
 docker pull ngrok/ngrok
 ngrok config add-authtoken 2y96VwzmhS1YV6vgll2Ua411oGc_755Qcpps22pznftiuGZWr
-
+npm install -r requirements.txt
 cd enclov-AI
 mkdir frontend
 cd frontend
