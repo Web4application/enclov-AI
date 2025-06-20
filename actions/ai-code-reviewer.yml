@@ -1,0 +1,26 @@
+name: "AI Code Reviewer"
+description: "Reviews PRs with OpenAI and assigns labels + reviewers"
+
+inputs:
+  OPENAI_API_KEY:
+    description: "OpenAI API Key"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run AI Review
+      run: python main.py
+      env:
+        GITHUB_TOKEN=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
+        OPENAI_Api_KEY=gG1uZhj50x1lYFKrrB5kT3BlbkFJXP3R63ExWT9lkcHI0pRq

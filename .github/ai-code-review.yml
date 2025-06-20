@@ -15,5 +15,5 @@ jobs:
       - name: Run AI Code Reviewer
         uses: ./ai-code-reviewer
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_Api_KEY=gG1uZhj50x1lYFKrrB5kT3BlbkFJXP3R63ExWT9lkcHI0pRq
+          GITHUB_TOKEN=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
