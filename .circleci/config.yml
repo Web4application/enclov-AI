@@ -1,0 +1,33 @@
+version: 2.1
+
+orbs:
+  docker: circleci/docker@2.1.1
+
+jobs:
+  build_and_push:
+    docker:
+      - image: cimg/python:3.11
+    steps:
+      - checkout
+
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - run:
+          name: Install dependencies
+          command: pip install -r requirements.txt
+
+      - docker/build:
+          image: web4application.github.io/enclov-AI
+          tag: latest
+          path: .
+          extra_build_args: --compress
+
+      - docker/push:
+          image: web4application.github.io/enclov-AI
+          tag: latest
+
+workflows:
+  build_and_push_workflow:
+    jobs:
+      - build_and_push

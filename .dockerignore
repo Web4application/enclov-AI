@@ -1,11 +1,22 @@
-__pycache__
+# Python cache files
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Virtual environments
 env/
 venv/
+
+# Git files (don’t send your git repo to Docker build context)
 .git
 .gitignore
+
+# Dockerfile itself (optional, but usually you want to exclude it from context)
 Dockerfile
+
+# Markdown docs (usually not needed inside container)
 *.md
+
+# Test folders/files (not needed in production image)
 tests/

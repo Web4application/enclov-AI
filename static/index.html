@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>enclovAI — GitHub PR Code Reviewer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0f0f0f;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #1f1f1f;
+      padding: 2rem;
+      text-align: center;
+      border-bottom: 1px solid #333;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: #00ffff;
+    }
+
+    header p {
+      margin-top: 0.5rem;
+      font-size: 1.2rem;
+      color: #ccc;
+    }
+
+    main {
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    form {
+      margin-bottom: 2rem;
+      background-color: #1a1a1a;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #333;
+      border-radius: 4px;
+      background-color: #2a2a2a;
+      color: #f0f0f0;
+    }
+
+    button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 4px;
+      background-color: #00ffff;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #00cccc;
+    }
+
+    #commentBox {
+      margin-top: 2rem;
+      background-color: #141414;
+      padding: 1rem;
+      border-radius: 6px;
+      min-height: 100px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      color: #b0f0ff;
+      border-left: 4px solid #00ffff;
+    }
+
+    .progress-container {
+      background-color: #2f2f2f;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 1rem;
+      height: 20px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: #00ffff;
+      transition: width 0.3s ease-in-out;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.9rem;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>enclovAI</h1>
+    <p>AI-Powered GitHub PR Code Reviewer</p>
+  </header>
+
+  <main>
+    <form id="prForm">
+      <label for="repoUrl">Repository URL</label>
+      <input type="text" id="repoUrl" name="repoUrl" placeholder="https://github.com/user/repo" required />
+
+      <label for="prNumber">Pull Request Number</label>
+      <input type="number" id="prNumber" name="prNumber" placeholder="42" required />
+
+      <button type="submit">Submit for AI Review</button>
+    </form>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div id="commentBox">
+      🧠 AI review feedback will appear here...
+    </div>
+  </main>
+
+  <footer>
+    © 2025 enclovAI — Built with ❤️ for developers
+  </footer>
+
+  <script>
+    const progressBar = document.getElementById('progressBar');
+    const commentBox = document.getElementById('commentBox');
+    const prForm = document.getElementById('prForm');
+
+    prForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const repoUrl = document.getElementById('repoUrl').value;
+      const prNumber = document.getElementById('prNumber').value;
+
+      commentBox.innerHTML = '⏳ Submitting PR for AI review...';
+      progressBar.style.width = '0%';
+
+      try {
+        const response = await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ repo_url: repoUrl, pr_number: prNumber })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          commentBox.innerHTML = '🚀 Review submitted successfully. Processing...';
+          simulateProgress();
+        } else {
+          commentBox.innerHTML = `❌ Submission failed: ${result.error}`;
+        }
+      } catch (error) {
+        console.error(error);
+        commentBox.innerHTML = '❌ Error submitting PR.';
+      }
+    });
+
+    function simulateProgress() {
+      let progress = 0;
+      const interval = setInterval(() => {
+        if (progress >= 100) {
+          clearInterval(interval);
+          commentBox.innerHTML = `
+            <strong>AI Review Comments:</strong><br><br>
+            ✅ Refactored inefficient loop at <code>utils/helpers.py:45</code>.<br>
+            🛡️ Suggested stronger typing in <code>main.py</code>.<br>
+            🧹 Unused imports cleaned in <code>api/views.py</code>.<br>
+            🔒 Security note: avoid exposing tokens in logs.<br>
+          `;
+          return;
+        }
+        progress += Math.random() * 10;
+        progressBar.style.width = Math.min(progress, 100) + '%';
+        commentBox.innerHTML = `<strong>AI Review Comments:</strong><br><br><em>Analyzing diffs... (${Math.floor(progress)}%)</em>`;
+      }, 600);
+    }
+  </script>
+</body>
+</html>

@@ -1,1 +1,29 @@
+docker build --build-arg CONFIGCAT_AUTH_KEY=yourkeyhere --build-arg JOB_ID=1234 -t myreactapp .
+docker run -p 3000:3000 -e JOB_ID=1234 myreactapp
+redis-server
+uvicorn enclov_ai_backend:app --reload
+celery -A enclov_ai_backend.celery_app worker --loglevel=info
+pip install fastapi uvicorn celery redis pydantic mlflow optuna shap
+pip install -r requirements.txt
+base64 -w 0 kubeconfig.yaml
+docker run --net=host -it -e NGROK_AUTHTOKEN=2y96VwzmhS1YV6vgll2Ua411oGc_755Qcpps22pznftiuGZWr ngrok/ngrok:latest http --url=above-feasible-lobster.ngrok-free.app 80
+docker run --net=host -it -e NGROK_AUTHTOKEN=2y96VwzmhS1YV6vgll2Ua411oGc_755Qcpps22pznftiuGZWr ngrok/ngrok:latest http 80
+docker pull ngrok/ngrok
+ngrok config add-authtoken 2y96VwzmhS1YV6vgll2Ua411oGc_755Qcpps22pznftiuGZWr
+npm install -r requirements.txt
+cd enclov-AI
+mkdir frontend
+cd frontend
+npx create-next-app@latest .
 
+cat << 'EOF' | git apply
+diff --git a/.github/workflows/gen-man.yml b/.github/workflows/gen-man.yml
+--- a/.github/workflows/gen-man.yml
++++ b/.github/workflows/gen-man.yml
+@@ -2,2 +2,5 @@
+ 
++permissions:
++  contents: read
++
+ on:
+EOF

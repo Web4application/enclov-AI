@@ -13,9 +13,18 @@ import openai
 app = FastAPI()
 
 # Required env vars
-GITHUB_WEBHOOK_SECRET = os.getenv("GITHUB_WEBHOOK_SECRET")
+GITHUB_WEBHOOK_SECRET = os.path.realpath("GITHUB_WEBHOOK_SECRET")
 GITHUB_APP_ID = os.getenv("GITHUB_APP_ID")
 GITHUB_PRIVATE_KEY_PATH = os.getenv("GITHUB_PRIVATE_KEY_PATH")
+SAFE_ROOT_DIRECTORY = "/path/to/safe/directory"
+
+if GITHUB_PRIVATE_KEY_PATH:
+    normalized_path = os.path.realpath(GITHUB_PRIVATE_KEY_PATH)
+    if not normalized_path.startswith(SAFE_ROOT_DIRECTORY):
+        raise ValueError("Invalid private key path")
+else:
+    raise ValueError("GITHUB_PRIVATE_KEY_PATH is not set")
+
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 openai.api_key = OPENAI_API_KEY
@@ -26,7 +35,7 @@ def verify_signature(request_body: bytes, signature: str):
     return hmac.compare_digest(expected_signature, signature)
 
 def create_jwt():
-    with open(GITHUB_PRIVATE_KEY_PATH, "r") as key_file:
+    with open(normalized_path, "r") as key_file:
         private_key = key_file.read()
     now = int(time.time())
     payload = {
@@ -46,6 +55,21 @@ def is_valid_github_url(url: str) -> bool:
         )
     except Exception:
         return False
+
+def resolve_and_validate_ip(url: str) -> str:
+    allowed_domains = {
+        "github.com": "140.82.112.4",
+        "raw.githubusercontent.com": "185.199.108.133"
+    }
+    try:
+        parsed_url = urlparse(url)
+        hostname = parsed_url.hostname
+        if not hostname or hostname not in allowed_domains:
+            raise ValueError("Invalid or unauthorized hostname")
+
+        return allowed_domains[hostname]
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid URL: {str(e)}")
 
 async def get_installation_access_token(installation_id: int):
     jwt_token = create_jwt()
@@ -115,8 +139,9 @@ async def github_webhook(request: Request, x_hub_signature_256: str = Header(Non
 
             token = await get_installation_access_token(installation_id)
 
+            validated_ip = resolve_and_validate_ip(code_diff_url)
             async with httpx.AsyncClient() as client:
-                diff_resp = await client.get(code_diff_url)
+                diff_resp = await client.get(f"https://{validated_ip}/diff")
                 diff_resp.raise_for_status()
                 diff_text = diff_resp.text
 

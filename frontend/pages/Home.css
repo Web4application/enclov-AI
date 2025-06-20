@@ -1,0 +1,95 @@
+body, .container {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: #0d0d0d;
+  color: #e0e0e0;
+  margin: 0;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #121212;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #333;
+}
+.logo {
+  font-size: 1.8rem;
+  color: #4caf50;
+  font-weight: bold;
+  text-shadow: 0 0 6px #4caf50cc;
+}
+.menu {
+  display: flex;
+  gap: 1.5rem;
+}
+.menu a {
+  color: #e0e0e0;
+  text-decoration: none;
+  font-weight: 500;
+}
+h1 {
+  color: #4caf50;
+  font-size: 3rem;
+  margin-top: 1.5rem;
+  text-shadow: 0 0 6px #4caf50cc;
+}
+.lead {
+  font-size: 1.3rem;
+  max-width: 600px;
+  text-align: center;
+  color: #bdbdbd;
+}
+.button {
+  margin-top: 2rem;
+  background: #4caf50;
+  color: white;
+  padding: 0.8em 1.6em;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+.button:hover {
+  background: #43a047;
+}
+.progress-container {
+  margin-top: 3rem;
+  width: 100%;
+  max-width: 600px;
+  background: #1e1e1e;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 20px;
+  background: #4caf50;
+  transition: width 0.4s ease;
+}
+.comments-box {
+  margin-top: 3rem;
+  background: #1a1a1a;
+  border-left: 4px solid #4caf50;
+  padding: 1rem;
+  max-width: 600px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+.footer {
+  margin-top: auto;
+  font-size: 0.8rem;
+  color: #666;
+  padding-top: 2rem;
+  text-align: center;
+}
+.footer a {
+  color: #4caf50;
+  text-decoration: none;
+}

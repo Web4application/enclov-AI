@@ -1,0 +1,31 @@
+name: Generate & Commit Workflow Patch
+
+on:
+  push:
+    paths:
+      - ".github/workflows/**"
+
+jobs:
+  generate-patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔁 Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: 🧱 Set up Git config
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+      - name: 🛠 Generate patch
+        run: bash scripts/generate_patches.sh
+
+      - name: 💾 Commit patch
+        run: |
+          git add patches/
+          git commit -m "🩹 Auto-generated patch for workflow changes" || echo "No changes to commit"
+
+      - name: 🚀 Push patch
+        run: git push

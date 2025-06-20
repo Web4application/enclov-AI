@@ -1,0 +1,80 @@
+name: CI/CD - Build, Test, Lint, and Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  DOCKER_IMAGE_NAME: ${{ enclov-ai }}/fastapi-ai-pr-reviewer
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install python and lint
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - run: pip install flake8
+      - run: flake8 .
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - run: pip install -r requirements.txt
+      - name: Run Tests
+        run: |
+          # Add real test commands here
+          echo "No tests yet — add pytest or unittest!"
+  
+  build_and_push:
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.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 }}
+          password: ${{ secrets.84298ed9f2470f159b48e36e76eb90eeac061941 }}
+          
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: ${{ env.web4application.github.io/enclov-ai:latest }}enclov-ai:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_and_push
+    permissions:
+      contents: read
+    steps:
+      - name: Deploy to production server
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.PROD_SERVER_HOST }}
+          username: ${{ secrets.PROD_SERVER_USER }}
+          key: ${{ secrets.PROD_SERVER_SSH_KEY }}
+          script: |
+            docker pull ${{ env.DOCKER_IMAGE_NAME }}:latest
+            docker stop fastapi-ai-pr-reviewer || true
+            docker rm fastapi-ai-pr-reviewer || true
+            docker run -d --restart always -p 8000:8000 --name fastapi-ai-pr-reviewer ${{ env.DOCKER_IMAGE_NAME }}:latest

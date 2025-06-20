@@ -1,53 +1,177 @@
-# enclov-AI
+[![Build and Deploy Enclov CLI Docs](https://github.com/Web4application/enclov-AI/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/Web4application/enclov-AI/actions/workflows/deploy-docs.yml)
+# enclov-AI 🧠🤖
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Build Status](https://github.com/Web4application/enclov-AI/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/Web4application/enclov-AI/actions)
+**AI-Powered GitHub Pull Request Reviewer**  
+_Automate code reviews with GPT-powered intelligence. FastAPI + Celery + Redis. Dockerized & DevOps-ready._
 
 ---
 
-![enclov-AI Banner](./docs/assets/enclov-ai-banner.png)
+## ✨ Overview
 
-**Automated AI-Powered GitHub Pull Request Reviewer**
+`enclov-AI` is your AI sidekick for PR reviews. It listens to GitHub webhook events, analyzes code diffs using OpenAI models, and posts smart, context-aware comments right into your pull requests.
 
-Enclov-AI seamlessly integrates with GitHub as a webhook-powered AI assistant that analyzes pull request diffs and generates insightful code reviews, leveraging OpenAI's GPT models.
+Whether you're tired of nitpicks, want consistent reviews, or just love dev automation — `enclov-AI` ships your code with confidence.
 
 ---
 
 ## 🚀 Features
 
-- **Webhook Listener:** Real-time pull request event handling from GitHub.
-- **Secure Verification:** HMAC SHA-256 signature validation for payload security.
-- **GitHub App Authentication:** JWT-based authentication for API access.
-- **AI-Powered Review:** Uses OpenAI GPT-4o-mini to produce contextual PR feedback.
-- **Automated Comments:** Posts review comments directly on GitHub PRs.
-- **Docker & CI/CD:** Ready for containerized deployment and continuous integration.
+- ✅ **GPT-powered code review suggestions**
+- 🔄 **GitHub webhook integration**
+- ⏱️ **Async processing with Celery & Redis**
+- 🐳 **Full Docker support for dev/prod**
+- 🛡️ **Scalable FastAPI backend**
+- 🧪 Unit-tested core logic (soon™)
 
 ---
 
-## 📸 Demo
+## 🛠️ Architecture
 
-![Webhook Flow](./docs/assets/webhook-flow.png)
+```
 
-*Illustration of webhook event flow and AI review posting.*
+GitHub Webhook → FastAPI Web Server → Celery Task Queue → OpenAI API
+↓
+Redis (Broker)
+
+````
 
 ---
 
-## 🛠️ Installation
+## 📦 Tech Stack
 
-### Prerequisites
+| Layer         | Tech                    |
+|---------------|-------------------------|
+| Backend       | FastAPI                 |
+| AI Review     | OpenAI GPT (via API)    |
+| Async Queue   | Celery + Redis          |
+| Deployment    | Docker / Vercel         |
+| Frontend      | Static HTML (Dark UI)   |
 
-- Python 3.10 or newer
-- Docker (optional)
-- GitHub App with configured webhook secret and private key
-- OpenAI API key
+---
 
-### Setup Environment Variables
+## ⚙️ Installation
 
-Create a `.env` file in your project root:
+Clone the repo:
+
+```bash
+git clone https://github.com/Web4application/enclov-AI.git
+cd enclov-AI
+````
+
+### 🐳 Docker (Full stack)
+
+```bash
+docker-compose up --build
+```
+
+By default, this starts:
+
+* `api`: FastAPI backend on `http://localhost:8000`
+* `worker`: Celery task processor
+* `redis`: Message broker
+
+---
+
+## 🔐 Environment Setup
+
+Create a `.env` file in the root:
 
 ```env
-GITHUB_WEBHOOK_SECRET=your_webhook_secret_here
-GITHUB_APP_ID=your_github_app_id_here
-GITHUB_PRIVATE_KEY_PATH=/path/to/private-key.pem
-OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_API_KEY=your_openai_key_here
+GITHUB_APP_SECRET=your_github_webhook_secret
+```
+
+You can generate GitHub secrets under your App configuration.
+
+---
+
+## 🧪 Webhook Testing
+
+* Use [smee.io](https://smee.io/) or ngrok to tunnel `http://localhost:8000/webhook/github`
+* Push a PR to your GitHub repo
+* Watch the logs for the AI-generated feedback
+
+---
+
+## 📤 Deployment
+
+### ✅ Local Dev
+
+Use Docker Compose (see `docker-compose.yml`):
+
+```bash
+docker-compose up
+```
+
+### 🌐 Vercel Frontend + Backend
+
+You can deploy the static HTML to [Vercel](https://vercel.com/) and the FastAPI backend separately (Render, Fly.io, Railway).
+
+---
+
+## 🧠 Want to Extend?
+
+* Add support for GitHub Checks API or GitHub Comments
+* Integrate Claude/Sonar/CodeQL for hybrid analysis
+* Add CI/CD with GitHub Actions to auto-deploy containers
+
+---
+
+## 👤 Author
+
+**Kubu Lee**
+[GitHub](https://github.com/Web4application) • `enclov-AI` Maintainer • Builder of AI, Web4, & Insight Engines
+
+---
+
+## 🛡️ License
+
+MIT — Use it, fork it, AI-ify your stack.
+
+````
+
+---
+
+## ⚙️ `deploy.sh` — Dev/Prod Deployment Script
+
+```bash
+#!/bin/bash
+set -e
+
+APP_NAME="enclov-AI"
+REPO_URL="https://github.com/Web4application/enclov-AI.git"
+FRONTEND_PATH="./index.html"
+BACKEND_PATH="./app"
+VERCEL_PROJECT_NAME="enclov-ai-frontend"
+
+echo "🚀 Deploying $APP_NAME..."
+
+# Step 1: Pull latest
+if [ ! -d "$APP_NAME" ]; then
+  git clone $REPO_URL
+else
+  echo "🔄 Repo already exists. Pulling latest..."
+  cd $APP_NAME && git pull && cd ..
+fi
+
+cd $APP_NAME
+
+# Step 2: Check Docker Compose
+echo "🐳 Starting Docker Compose stack..."
+docker-compose up -d --build
+
+# Step 3: Vercel Frontend Deploy (if installed)
+if command -v vercel &> /dev/null; then
+  echo "🌐 Deploying static frontend to Vercel..."
+  cd frontend || mkdir frontend && cp $FRONTEND_PATH frontend/index.html && cd frontend
+  vercel --prod --confirm --name "$VERCEL_PROJECT_NAME"
+  cd ..
+else
+  echo "⚠️ Vercel CLI not found. Skipping frontend deploy."
+  echo "Install via: npm i -g vercel"
+fi
+
+echo "✅ Deployment complete."
+````
+
+> 💡 Optional: Add GitHub Actions for CI/CD. Want me to scaffold it?

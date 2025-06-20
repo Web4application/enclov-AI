@@ -1,0 +1,35 @@
+name: Build and Deploy Enclov CLI Docs
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install --upgrade pip
+
+      - name: Generate docs
+        run: python generate_docs.py
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ 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 }}
+          publish_dir: ./docs
