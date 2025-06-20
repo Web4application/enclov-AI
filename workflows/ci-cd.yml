@@ -7,7 +7,7 @@ on:
   pull_request:
 
 env:
-  DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-ai-pr-reviewer
+  DOCKER_IMAGE_NAME: ${{ enclov-ai }}/fastapi-ai-pr-reviewer
 
 jobs:
   lint:
