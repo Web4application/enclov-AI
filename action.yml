@@ -24,3 +24,4 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
+
