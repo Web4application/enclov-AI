@@ -22,8 +22,8 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ enclov-ai }}
-          password: ${{ 84298ed9f2470f159b48e36e76eb90eeac061941 }}
+           username: ${{ secrets.ENCLOVE-AI }}
+          password: ${{ secrets.84298ed9f2470f159b48e36e76eb90eeac061941 }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
