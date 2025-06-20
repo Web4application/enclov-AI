@@ -21,7 +21,7 @@ jobs:
       - name: Docker login
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.ENCLOVE-AI }}
+          username: ${{ secrets.enclov-AI }}
           password: ${{ secrets.84298ed9f2470f159b48e36e76eb90eeac061941 }}
 
       - name: Set up Docker Buildx
