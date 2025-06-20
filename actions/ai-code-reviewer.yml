@@ -22,6 +22,5 @@ runs:
     - name: Run AI Review
       run: python main.py
       env:
-        GITHUB_TOKEN: ${{ github.token }}
-        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-
+        GITHUB_TOKEN=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
+        OPENAI_Api_KEY=gG1uZhj50x1lYFKrrB5kT3BlbkFJXP3R63ExWT9lkcHI0pRq
