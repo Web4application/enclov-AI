@@ -128,13 +128,12 @@ You can deploy the static HTML to [Vercel](https://vercel.com/) and the FastAPI 
 
 MIT — Use it, fork it, AI-ify your stack.
 
-````
 
----
 
 ## ⚙️ `deploy.sh` — Dev/Prod Deployment Script
 
-```bash
+```
+
 #!/bin/bash
 set -e
 
@@ -173,5 +172,3 @@ fi
 
 echo "✅ Deployment complete."
 ````
-
-> 💡 Optional: Add GitHub Actions for CI/CD. Want me to scaffold it?
