@@ -26,3 +26,18 @@ generate-patches:
 	@chmod +x scripts/generate_patches.sh
 	@scripts/generate_patches.sh
 	@echo "✅ Patch files generated."
+
+
+APP_NAME=enclov-AI
+
+deploy:
+	./deploy.sh
+
+watch:
+	./deploy.sh --watch
+
+logs:
+	docker-compose -f $(APP_NAME)/docker-compose.yml logs -f
+
+stop:
+	docker-compose -f $(APP_NAME)/docker-compose.yml down
