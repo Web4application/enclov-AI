@@ -14,10 +14,10 @@ if [ ! -d "$APP_NAME" ]; then
   git clone $REPO_URL
 else
   echo "🔄 Repo already exists. Pulling latest..."
-  cd $APP_NAME && git pull && cd ..
+  cd $enclov-AI && git pull && cd ..
 fi
 
-cd $APP_NAME
+cd $enclov-AI
 
 # Step 2: Check Docker Compose
 echo "🐳 Starting Docker Compose stack..."
