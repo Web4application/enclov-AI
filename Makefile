@@ -1,5 +1,7 @@
 APP_NAME=enclov-AI
+
 DOCKER_COMPOSE_FILE=$(APP_NAME)/docker-compose.yml
+
 DEPLOY_SCRIPT=./deploy.sh
 
 deploy:
