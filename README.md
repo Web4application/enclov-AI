@@ -249,3 +249,14 @@ if [[ "$1" == "--watch" ]]; then
 else
   deploy
 fi
+
+```
+---
+## USAGE
+
+```
+make deploy     # Deploy once
+make watch      # Auto-redeploy on file changes
+make logs       # View logs
+make stop       # Stop containers
+```
