@@ -4,6 +4,13 @@ DOCKER_COMPOSE_FILE=$(APP_NAME)/docker-compose.yml
 
 DEPLOY_SCRIPT=./deploy.sh
 
+status:
+	@scripts/status.sh
+
+cleanup:
+	@scripts/cleanup.sh
+
+
 deploy:
 	./deploy.sh
 
