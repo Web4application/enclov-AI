@@ -1,14 +1,18 @@
-———
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <h1> Enclov AI </h1>
 
-ENCLOV AI
-        
-———
-<!-- Load Enclov AI script asynchronously --> 
+  <!-- Load Enclov AI script asynchronously -->
+  <script
     src="https://enclov-dkbdfezwi-web4application.vercel.app"
     async
     onload="initEnclovApp()"
-    onerror="showError('⚠️ Failed to load Enclov AI script')"></script><style>
-    body {
+    onerror="showError('⚠️ Failed to load Enclov AI script')">
+
+  </body
+  {
       font-family: "Inter", Arial, sans-serif;
       background-color: #050505;
       color: #e8e8e8;
@@ -108,18 +112,22 @@ ENCLOV AI
     @keyframes shake {
       0% { transform: translateX(-3px); }
       100% { transform: translateX(3px); }
-    }</style>
-```
-</head>
-<body>
-    <h1>Welcome to Enclov AI</h1>
-    
-<p>Powered by Web4Application</p>
+    } </style><script/></head><body>
+ <p/>
+  </h2>Welcome to Enclov AI</h2>
+  
+  <h3>Powered by Web4Application</h3>
+  <p>
+  <div id="loader" class="loader"></div>
+  <div id="status" class="status">⏳ Initializing Enclov AI...</div>
 
-<div id="loader" class="loader"</div>
-          <div id="status" class="status">⏳ Initializing Enclov AI...</div<!-- GitHub Actions build badge --><a href="https://github.com/Web4application/enclov-AI/actions/workflows/deploy-docs.yml" target="_blank">
-                  <img src="https://github.com/Web4application/enclov-AI/actions/workflows/deploy-docs.yml/badge.svg" 
-      alt="Build and Deploy Enclov CLI Docs"/></a>
+  <!-- GitHub Actions build badge -->
+  <a href="https://github.com/Web4application/enclov-AI/actions/workflows/deploy-docs.yml" target="_blank">
+    <img 
+      src="https://github.com/Web4application/enclov-AI/actions/workflows/deploy-docs.yml/badge.svg" 
+      alt="Build and Deploy Enclov CLI Docs" 
+    />
+  </a>
 
   <noscript>
     <p style="color: red;">⚠️ JavaScript is disabled. Enclov AI features won’t work properly.</p>
