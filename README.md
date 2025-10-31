@@ -7,6 +7,7 @@ commands = [
     {"name": "version", "description": "Shows version info."},
 ]
 
+
 output_dir = "docs"
 images_dir = os.path.join(output_dir, "images")
 
