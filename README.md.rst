@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <h1> Enclov AI </h1>
-
-  <!-- Load Enclov AI script asynchronously -->
-  <script
+  <h1>Enclov AI</h1>
+    <!-- Load Enclov AI script asynchronously -->
+  <script 
     src="https://enclov-dkbdfezwi-web4application.vercel.app"
     async
     onload="initEnclovApp()"
     onerror="showError('⚠️ Failed to load Enclov AI script')">
+  </script>
 
-  </body
-  {
+  <style>
+    body {
       font-family: "Inter", Arial, sans-serif;
       background-color: #050505;
       color: #e8e8e8;
@@ -112,12 +112,13 @@
     @keyframes shake {
       0% { transform: translateX(-3px); }
       100% { transform: translateX(3px); }
-    } </style><script/></head><body>
- <p/>
-  </h2>Welcome to Enclov AI</h2>
-  
-  <h3>Powered by Web4Application</h3>
-  <p>
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to Enclov AI</h1>
+  <p>Powered by Web4Application</p>
+
   <div id="loader" class="loader"></div>
   <div id="status" class="status">⏳ Initializing Enclov AI...</div>
 
