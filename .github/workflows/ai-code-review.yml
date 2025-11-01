@@ -3,6 +3,9 @@ name: AI Code Review
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    permission:
+  contents: read
+  pull-requests: write
 
 jobs:
   ai_review:
