@@ -6,7 +6,7 @@ def write_file(path, content):
         f.write(content.strip() + "\n")
 
 # Combine LangChain + WebLLM into a single `createEnclovAppWithLLM.py` scaffold file
-scaffold_script_path = Path("createEnclovAppWithLLM.py")
+scaffold_script_path = Path("Docs/createEnclovAppWithLLM")
 
 scaffold_script_code = """
 import os
