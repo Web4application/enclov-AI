@@ -9,7 +9,7 @@ export default function App() {
     if (!input.trim()) return
 
     setMessages([...messages, { role: 'user', content: input }])
-    const response = await fetch("http://localhost:8000/chat", {
+    const response = await fetch("https://agent.ai/agent/1mqk8t7uesejd9us", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: input })
