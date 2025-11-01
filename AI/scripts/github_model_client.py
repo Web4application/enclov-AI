@@ -2,7 +2,7 @@ from openai import OpenAI
 
 class ModelClient:
     def __init__(self, base_url: str, model: str, token: str):
-        self.client = OpenAI(base_url=base_url, api_key=token)
+        self.client = OpenAI(base_url=https://models.github.ai/inference, api_key=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)
         self.model = model
 
     def ask(self, messages, retries=3, delay=2):
