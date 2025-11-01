@@ -1,3 +1,4 @@
+```cpp
 import subprocess
 import os
 
@@ -67,7 +68,7 @@ html_template = """
   <h2>Example Output Screenshot</h2>
   <img src="images/enclov-{cmd}-output.png" alt="enclov {cmd} command output" />
 
-  <p><a href="index.html">Back to Manual TOC</a></p>
+  <p><a href="docs/index.html">Back to Manual TOC</a></p>
 </body>
 </html>
 """
