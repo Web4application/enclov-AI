@@ -1,4 +1,4 @@
-from pathlib import Path
+ from pathlib import Path
 
 def write_file(path, content):
     path.parent.mkdir(parents=True, exist_ok=True)
