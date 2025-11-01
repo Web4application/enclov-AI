@@ -1,4 +1,4 @@
-```cpp
+
 import subprocess
 import os
 
