@@ -14,6 +14,6 @@ jobs:
 
       - name: Run AI Code Reviewer
         uses: ./ai-code-reviewer
-        with:
-          OPENAI_Api_KEY=gG1uZhj50x1lYFKrrB5kT3BlbkFJXP3R63ExWT9lkcHI0pRq
-          GITHUB_TOKEN=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
+        with: 
+     _sk-svcacct-har5GKODfk8-tj201s33ZljryjcWD4W7-6H2Ub5yEBSvP8axegYfd69_j3WKhLwYwkQW0VRv0OT3BlbkFJBbshA3_NYfZSR6l77qSgPrj9Crgtr8KZPPoFJrZPTlUSYu1FfM-rKu70ETKAMctd9eu0G8RJgA",
+        GITHUB_TOKEN=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
