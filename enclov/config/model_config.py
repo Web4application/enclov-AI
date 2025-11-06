@@ -18,7 +18,7 @@ MODELS = [
     ModelInfo(repo="bigscience/bloomz"),
 ]
 
-DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME", "enoch/llama-65b-hf")
+DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME", "web4application/brain")
 INITIAL_PEERS = os.getenv("INITIAL_PEERS", "").split(",") if os.getenv("INITIAL_PEERS") else PUBLIC_INITIAL_PEERS
 MAX_SESSIONS = int(os.getenv("MAX_SESSIONS", 50))
 STEP_TIMEOUT = int(os.getenv("STEP_TIMEOUT", 5 * 60))
