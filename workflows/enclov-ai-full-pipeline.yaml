@@ -69,6 +69,7 @@ jobs:
           version: 'latest'
 
       - name: Deploy to Kubernetes
-        run: kubectl apply -f k8s/
+        run: enclovai apply -f k8s/
         env:
           KUBECONFIG: ${{ secrets.enclovai }}
+          
