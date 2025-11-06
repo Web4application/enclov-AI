@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About enclovAI & Kubu Lee</title>
+  <style>
+    :root{--cyan:#00ffff;--violet:#b400ff;--bg:#0f0f0f;--text:#f0f0f0;}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:'Segoe UI',Tahoma,sans-serif;text-align:center;overflow-x:hidden}
+    header{padding:3rem 1rem;}
+    h1{font-size:2.8rem;background:linear-gradient(90deg,var(--cyan),var(--violet));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0;}
+    .quote{font-size:1.4rem;margin-top:1.5rem;height:2rem}
+    main{max-width:850px;margin:auto;padding:2rem;line-height:1.7;text-align:left}
+    .glow{background:linear-gradient(90deg,var(--cyan),var(--violet));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:bold}
+    footer{padding:2rem;color:#888;font-size:.9rem}
+    a{color:var(--cyan);text-decoration:none}
+    .fade{opacity:0;transform:translateY(20px);transition:all 1s}
+    .fade.visible{opacity:1;transform:none}
+    button{margin-top:2rem;padding:.8rem 1.5rem;border:none;border-radius:4px;
+      background:linear-gradient(90deg,var(--cyan),var(--violet));color:#000;font-weight:bold;cursor:pointer}
+    button:hover{opacity:.8}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>About enclovAI</h1>
+    <div class="quote" id="quote"></div>
+  </header>
+
+  <main>
+    <section class="fade">
+      <p>
+        <span class="glow">enclovAI</span> isn’t just another AI tool — it’s a digital companion for developers.  
+        It studies pull requests, listens to intent, and writes feedback that feels human.  
+        Between logic and soul, enclovAI listens.
+      </p>
+      <p>
+        Created by <strong>Seriki Yakub</strong> — known to the digital world as <strong>Kubu Lee</strong> — a 23-year-old visionary from Nigeria,
+        builder of <em>fluukpe</em>, <em>QUBUHUB</em>, and the Web4 intelligence ecosystem.  
+        He believes that every line of code carries a pulse — and that AI should amplify, not replace, the human rhythm within it.
+      </p>
+      <p>
+        enclovAI stands as the bridge between code and consciousness.  
+        A system that automates with empathy, analyses with grace, and collaborates with the developer’s creative spirit.
+      </p>
+      <p>
+        It marks the beginning of a new dialogue: not human vs machine, but <span class="glow">human + machine</span>.
+      </p>
+      <p style="text-align:center">
+        <button onclick="location.href='index.html'">← Back Home</button>
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    Built with ❤️ by Seriki Yakub ( Kubu Lee )  
+    <br>
+    <a href="https://github.com/Web4application">GitHub</a> • 
+    <a href="https://x.com/KubuLee">X</a> • 
+    <a href="https://web4application.github.io/">Website</a>
+  </footer>
+
+  <script>
+    // Typewriter quotes
+    const quotes=[
+      "Code is poetry. AI is the echo. enclovAI is the bridge.",
+      "Between logic and soul, enclovAI listens."
+    ];
+    const q=document.getElementById('quote');let i=0,j=0,deleting=false;
+    function type(){
+      let current=quotes[i];q.textContent=current.slice(0,j);
+      if(!deleting){if(j++===current.length){deleting=true;setTimeout(type,2000);return}}
+      else{if(j--===0){deleting=false;i=(i+1)%quotes.length}}
+      setTimeout(type,deleting?50:100);
+    } type();
+    const fades=document.querySelectorAll('.fade');
+    window.addEventListener('scroll',()=>{fades.forEach(f=>{
+      if(f.getBoundingClientRect().top<window.innerHeight-50)f.classList.add('visible');
+    });});
+  </script>
+</body>
+</html>
